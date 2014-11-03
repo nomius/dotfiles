@@ -1,0 +1,7 @@
+term xterm
+vbell on
+startup_message off
+hardstatus alwayslastline
+hardstatus string "%{= g} %{= w}%-w%{=r}%n %t%{-}%+W"
+#termcapinfo xterm|xterms|xs|rxvt ti@:te@
+
