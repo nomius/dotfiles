@@ -1,0 +1,96 @@
+background no
+font Sans:size=7
+#xftfont Sans:size=10
+use_xft yes
+xftalpha 0.9
+update_interval 3.0
+total_run_times 0
+own_window yes
+own_window_type normal
+own_window_transparent yes
+own_window_class override
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+double_buffer yes
+minimum_size 1024 4
+#minimum_size 235
+maximum_width 235
+draw_shades yes
+draw_outline no
+draw_borders no
+draw_graph_borders yes
+default_color white
+default_shade_color black
+default_outline_color green
+alignment top_right
+gap_x 12
+gap_y 35
+no_buffers yes
+uppercase no
+cpu_avg_samples 2
+override_utf8_locale no
+uppercase yes # set to yes if you want all text to be in uppercase
+
+TEXT
+${color white}SYSTEM ${hr 1}${color}
+
+Hostname: $alignr$nodename
+Kernel: $alignr$kernel
+Uptime: $alignr$uptime
+MotherBoard: ${alignr}${hwmon 0 temp 2}C
+# | ${hwmon 0 temp 3}C
+System temperature: ${alignr}${hwmon 0 temp 1}C
+CPUs: ${alignr}${hwmon 1 temp 1}C | ${hwmon 1 temp 2}C | ${hwmon 1 temp 3}C | ${hwmon 1 temp 4}C | ${hwmon 1 temp 5}C
+
+Processes: ${alignr}$processes ($running_processes running)
+Load: ${alignr}$loadavg
+
+CPU1 ${alignr}${cpu cpu1}% (${freq 1})
+${cpubar 4 cpu1}
+CPU2 ${alignr}${cpu cpu2}% (${freq 2})
+${cpubar 4 cpu2}
+CPU3 ${alignr}${cpu cpu3}% (${freq 3})
+${cpubar 4 cpu3}
+CPU4 ${alignr}${cpu cpu4}% (${freq 4})
+${cpubar 4 cpu4}
+
+Ram ${alignr}$mem / $memmax ($memperc%)
+${membar 4}
+
+Highest CPU $alignr CPU% MEM%
+${top name 1}$alignr${top cpu 1}   ${top mem 1}
+${top name 2}$alignr${top cpu 2}   ${top mem 2}
+${top name 3}$alignr${top cpu 3}   ${top mem 3}
+
+Highest MEM $alignr CPU% MEM%
+${top_mem name 1}$alignr${top_mem cpu 1}   ${top_mem mem 1}
+${top_mem name 2}$alignr${top_mem cpu 2}   ${top_mem mem 2}
+${top_mem name 3}$alignr${top_mem cpu 3}   ${top_mem mem 3}
+
+${color white}Filesystem ${hr 1}${color}
+
+Root: ${alignr}${fs_free /} / ${fs_size /}
+${fs_bar 4 /}
+
+${color white}NETWORK (${wireless_essid wlo1} - ${addr wlo1}) ${hr 1}${color}
+
+Down ${downspeed wlo1} ${alignr}Up ${upspeed wlo1}
+${downspeedgraph wlo1 25,107} ${alignr}${upspeedgraph wlo1 25,107}
+Total ${totaldown wlo1} ${alignr}Total ${totalup wlo1}
+
+Connections ${alignr} Remote Service/Port
+ ${tcp_portmon 1 32768 rip 0} ${alignr} ${tcp_portmon 1 32768 lservice 0}
+ ${tcp_portmon 1 32768 rip 1} ${alignr} ${tcp_portmon 1 32768 lservice 1}
+ ${tcp_portmon 1 32768 rip 2} ${alignr} ${tcp_portmon 1 32768 lservice 2}
+ ${tcp_portmon 1 32768 rip 3} ${alignr} ${tcp_portmon 1 32768 lservice 3}
+ ${color red}${tcp_portmon 1 32767 rip 0} ${alignr} ${tcp_portmon 1 32767 lservice 0}
+ ${color red}${tcp_portmon 1 32767 rip 1} ${alignr} ${tcp_portmon 1 32767 lservice 1}
+ ${color red}${tcp_portmon 1 32767 rip 2} ${alignr} ${tcp_portmon 1 32767 lservice 2}
+ ${color red}${tcp_portmon 1 32767 rip 3} ${alignr} ${tcp_portmon 1 32767 lservice 3}
+
+#${color white}WEATHER ${hr 1}${color}
+
+#${texeci 600 weather.sh}
+
+#${color white}FQDN ${hr 1}${color}
+
+##${texeci 300 /usr/sbin/updateurl.sh}

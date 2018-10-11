@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Update:
+#  curl --data-binary '{ "jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "mybash"}' -H 'content-type: application/json;' "http://${KODI_USER}:${KODI_PASS}@${KODI_HOST}:${KODI_PORT}/jsonrpc"
+
+if [[ "$1" != http* ]]; then 
+	forig=$(readlink -f "${1}")
+	ext=${f/*./}
+	mkdir -p $HOME/.hidden
+	ftemp=$(mktemp -p $HOME/.hidden)
+	rm -f ${ftemp}
+	ftemp=${ftemp}.${ext}
+	ln -s "${forig}" "${ftemp}"
+else
+	ftemp="$1"
+fi
+
+idok-x86_64 "-target=${KODI_HOST}" "-login=${KODI_USER}" "-password=${KODI_PASS}" "-targetport=${KODI_PORT}" "${ftemp}"
+rm -f "${ftemp}"

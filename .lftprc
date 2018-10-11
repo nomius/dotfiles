@@ -1,3 +1,0 @@
-set ftp:passive-mode on
-set ftp:auto-passive-mode on
-set ftp:ssl-allow no

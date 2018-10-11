@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+disable()
+{
+	logger -t MusicSync "Disabling sync"
+	sudo rm -f /tmp/syncAvailable
+}
+
+
+if [ "${1}" = "runsync" ]; then
+	echo 
+	echo "Please wait..."
+
+	exec 3>&1 4>&2 1>/dev/null 2>&1
+	disable
+	logger -t MusicSync "Starting adb..."
+	sudo adb start-server >/dev/null
+	logger -t MusicSync "Starting rsync daemon in cellphone..."
+	adb shell 'rsync -v --daemon --no-detach --port=8730 --config=/sdcard/rsyncd.conf' &
+	sleep 2
+	logger -t MusicSync "Forwarding port 8730 in cellphone to localhost:8730..."
+	adb forward tcp:8730 tcp:8730
+
+	logger -t MusicSync "Starting to sync..."
+	rsync -av rsync://localhost:8730/root/sdcard/Music/ ${MUSIC_SYNC_DIR} | logger -t MusicSync
+	logger -t MusicSync "Sync done. Killing rsync daemon in cellphone..."
+	kill %1
+	LC_ALL=C find ${MUSIC_SYNC_DIR} -name '*[! -~]*'
+	logger -t MusicSync "All Done"
+elif [ "${1}" = "cancel" ]; then
+	disable
+else
+	logger -t MusicSync "Sync Available, will be presented on next terminal"
+	touch /tmp/syncAvailable
+fi

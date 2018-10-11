@@ -1,0 +1,6 @@
+term xterm
+vbell on
+startup_message off
+hardstatus alwayslastline '%{= G}[ %{G}%H %{g}][%= %{= w}%?%-Lw%?%{= R}%n*%f %t%?%{= R}(%u)%?%{= w}%+Lw%?%= %{= g}][ %{y}Load: %l %{g}][%{B}%D %d-%    M-%Y %{W}%C:%s %A %{g}]'
+#termcapinfo xterm|xterms|xs|rxvt ti@:te@
+

@@ -1,1 +1,0 @@
--ut -bbo -brs -br -l800 -lc800 -ci4 -cli4 -nbad -bap -fc1 -fca -i4 -nlps -nbfda -ncdw -nce -ncs -nbc -npcs -nprs -npsl -saf -sai -saw -sc -nsob -ss -ppi0 -ts4

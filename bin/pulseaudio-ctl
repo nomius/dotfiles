@@ -1,0 +1,184 @@
+#!/usr/bin/env bash 
+
+# TODO: I don't know if this still works these days...
+
+MakeItRun() {
+	if [ -n "${1}" ]; then
+		user=$(ps -p $(pgrep ${2}) uh | cut -d ' ' -f 1)
+		if [ "$(whoami)" != "$user" ]; then
+			su -c "pulseaudio --check" $user
+			ret=$?
+		else
+			pulseaudio --check
+			ret=$?
+		fi
+		if [ $ret -ne 0 ]; then
+			[ "$(whoami)" != "$user" ] && su -c "pulseaudio --start --log-target=syslog &" $user || pulseaudio --start --log-target=syslog &
+		fi
+	fi
+}
+
+GetCurrentSink() {
+	INDEX=$(pacmd list-sinks | grep "* index" | awk -F ' ' '{print $NF}')
+	echo $INDEX
+}
+
+GetCurrentSource() {
+	INDEX=$(pacmd list-sources | grep "* index" | awk -F ' ' '{print $NF}')
+	echo $INDEX
+}
+
+Switch() {
+	case $1 in
+		input)
+			shift 2
+			SRCS=$(pacmd list-sources | grep -B 40 -i -e "alsa.card_name = .*${1}" | tac - | grep "index: " | head -n 1 | awk '{print $NF}')
+			pacmd set-default-source $SRCS
+			pacmd list-source-outputs | grep index | while read line; do
+				echo "Moving output: $(echo $line | cut -f2 -d' ') to source: $SRCS ($1)"
+				pacmd move-source-output `echo $line | cut -f2 -d' '` $SRCS
+			done
+		;;
+		output)
+			shift 2
+			SINK=$(pacmd list-sinks | grep -B 40 -i -e "alsa.card_name = .*${1}" | tac - | grep "index: " | head -n 1 | awk '{print $NF}')
+			pacmd set-default-sink $SINK
+			pacmd list-sink-inputs | grep index | while read line; do
+				echo "Moving input: $(echo $line | cut -f2 -d' ') to sink: $SINK ($1)"
+				pacmd move-sink-input `echo $line | cut -f2 -d' '` $SINK
+			done
+		;;
+		all)
+			shift 2
+			Switch input to $1
+			Switch output to $1
+		;;
+	esac
+}
+
+Mute() {
+	set -x
+	if [ "${1}" == "mic" ]; then
+		indx=$(GetCurrentSource)
+		if [ "${2}" == "toggle" ]; then
+			cur=$(pacmd list-sources | grep -A 15 '* index' | awk '/muted:/ { print $2 }')
+			if [ "${cur}" == "no" ]; then
+				pacmd set-source-mute $indx true
+			else
+				pacmd set-source-mute $indx false
+			fi
+		else
+			pacmd set-source-mute $indx true
+		fi
+	else
+		indx=$(GetCurrentSink)
+		if [ "${1}" == "toggle" ]; then
+			cur=$(pacmd list-sinks | grep -A 15 '* index' | awk '/muted:/ { print $2 }')
+			if [ "${cur}" == "no" ]; then
+				pacmd set-sink-mute $indx true
+			else
+				pacmd set-sink-mute $indx false
+			fi
+			for((i=0;i<3;i++)); do
+				NAME=$(pacmd list-sinks 2>/dev/null | grep -A 30 "^[ ]*\*" | awk -F '"' '/alsa.name/ {print $2}')
+				[ -n "${NAME}" ] && break
+				sleep 1
+			done
+			[ -z "${NAME}" ] && return
+			logger $NAME
+			DEV=$(aplay -l | grep "$NAME" | awk -F '[ :]' '{print $2}')
+			logger $DEV
+			amixer -c ${DEV} set ${ALSA_CHANNEL} toggle
+		else
+			pacmd set-sink-mute $indx true
+		fi
+	fi
+}
+
+UnMute() {
+	if [ "${1}" == "mic" ]; then
+		indx=$(GetCurrentSource)
+		pacmd set-source-mute $indx false
+	else
+		indx=$(GetCurrentSink)
+		pacmd set-sink-mute $indx false
+	fi
+}
+
+Volume() {
+	if [ "${1}" == "set" ]; then
+		if [ "${2}" == "mic" ]; then
+			UnMute mic
+			indx=$(GetCurrentSource)
+			pactl set-source-volume $indx ${3}%
+		else
+			UnMute
+			indx=$(GetCurrentSink)
+			pactl set-sink-volume $indx ${2}%
+		fi
+	fi
+	if [ "${1}" == "up" ]; then
+		if [ "${2}" == "mic" ]; then
+			UnMute mic
+			indx=$(GetCurrentSource)
+			pactl set-source-volume $indx +${3}%
+		else
+			UnMute
+			indx=$(GetCurrentSink)
+			pactl set-sink-volume $indx +${2}%
+		fi
+	fi
+	if [ "${1}" == "down" ]; then
+		if [ "${2}" == "mic" ]; then
+			UnMute mic
+			indx=$(GetCurrentSource)
+			pactl set-source-volume $indx -- \-${3}%
+		else
+			UnMute
+			indx=$(GetCurrentSink)
+			pactl set-sink-volume $indx \-${2}%
+		fi
+	fi
+}
+
+SayHelp() {
+	cat << EOF
+$0 [options]
+swtich to <name regex>
+volume [set|up|down] [mic] <percentage>
+mute [mic] [toggle]
+unpute [mic]
+EOF
+}
+
+user=$(ps -p $(pidof pulseaudio) uh 2>/dev/null | cut -d ' ' -f 1)
+[ -z "$user" ] && MakeItRun as startx
+user=$(ps -p $(pidof pulseaudio) uh | cut -d ' ' -f 1)
+if [ "$(whoami)" != "$user" ]; then
+	su -c "${0} $*" $user
+	exit
+fi
+
+case $1 in
+	switch)
+		shift 1
+		Switch $@
+	;;
+	volume)
+		shift 1
+		Volume $@
+	;;
+	mute)
+		shift 1
+		Mute $@
+	;;
+	unmute)
+		shift 1
+		Mute $@
+	;;
+	*)
+		SayHelp
+		exit 1
+	;;
+esac
+

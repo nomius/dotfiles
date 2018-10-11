@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -x
+
+case "$1" in
+	chromium)
+		shift
+		if [ -e /usr/bin/chromium ]; then
+			exec /usr/bin/chromium $*
+		else
+			echo "Chromium is not installed" | dmenu -i -p "Error"
+		fi
+	;;
+	brave)
+		shift
+		if [ -e /usr/bin/brave ]; then
+			exec /usr/bin/brave $*
+		else
+			echo "Brave is not installed" | dmenu -i -p "Error"
+		fi
+
+	;;
+	firefox)
+		shift
+		if [ -e /usr/bin/firefox ]; then
+			exec /usr/bin/firefox $*
+		else
+			echo "Firefox is not installed" | dmenu -i -p "Error"
+		fi
+
+	;;
+	chrome)
+		shift
+		if [ -e /usr/bin/google-chrome-stable ]; then
+			exec /usr/bin/google-chrome-stable $*
+		else
+			echo "Chrome is not installed" | dmenu -i -p "Error"
+		fi
+	;;
+	*)
+		if [ -z "$1" ]; then
+			if [ -e /usr/bin/chromium ]; then
+				exec /usr/bin/chromium $*
+			elif [ -e /usr/bin/google-chrome-stable ]; then
+				exec /usr/bin/google-chrome-stable $*
+			elif [ -e /usr/bin/brave ]; then
+				exec /usr/bin/brave $*
+			elif [ -e /usr/bin/firefox ]; then
+				exec /usr/bin/firefox $*
+			else
+				exit 127
+			fi
+		else
+			opt=$(printf "chromium\nbrave\nfirefox\nchrome\n" | dmenu -p "Select the browser you want to use (depends on availability)")
+			exec ${0} ${opt} $*
+		fi
+	;;
+esac

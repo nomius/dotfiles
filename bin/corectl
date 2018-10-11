@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+
+# TODO: I don't know if this still works these days...
+
+function list_speeds() {
+	echo "Available speeds:"
+	echo -n "  * "
+	for x in `cat /sys/devices/system/cpu/cpu${1}/cpufreq/scaling_available_frequencies`; do
+		echo -n " $(( ${x} / 1000))"
+	done
+	echo
+}
+
+function list_gobernors() {
+	echo "Available gobernors:"
+	echo -n "  * "
+	for x in `cat /sys/devices/system/cpu/cpu${1}/cpufreq/scaling_available_governors`; do
+		echo -n " ${x}"
+	done
+	echo
+}
+
+function number_of_cores() {
+	i=0
+	for x in /sys/devices/system/cpu/cpu[0-9]*; do
+		i=$((${i} + 1))
+	done
+	echo $((${i} - 1))
+}
+
+function set_gobernor_core_in_core() {
+	if [ -e /sys/devices/system/cpu/cpu${1}/cpufreq/scaling_governor ]; then
+		echo "echo ${2} > /sys/devices/system/cpu/cpu${1}/cpufreq/scaling_governor"
+		echo "${2}" > /sys/devices/system/cpu/cpu${1}/cpufreq/scaling_governor
+		return $?
+	else
+		echo "Core ${1} disabled [Setting gobernor]"
+		return 1
+	fi
+}
+
+function set_speed_in_core() {
+	if [ -e /sys/devices/system/cpu/cpu${1}/cpufreq/scaling_setspeed ]; then
+		echo "$((${2} * 1000))" > /sys/devices/system/cpu/cpu${1}/cpufreq/scaling_setspeed
+		return $?
+	else
+		echo "Core ${1} disabled [Setting speed]"
+		return 1
+	fi
+}
+
+function set_enable_in_core() {
+	echo 1 > /sys/devices/system/cpu/cpu${1}/online 2>/dev/null
+}
+
+function set_disable_in_core() {
+	echo 0 > /sys/devices/system/cpu/cpu${1}/online 2>/dev/null
+
+}
+
+function set_normal() {
+	for x in $(seq 1 `number_of_cores`); do
+		set_enable_in_core ${x}
+		set_gobernor_core_in_core "${x}" "ondemand"
+	done
+	set_gobernor_core_in_core "0" "ondemand"
+}
+
+function set_offline() {
+	for x in $(seq 1 `number_of_cores`); do
+		set_disable_in_core ${x}
+		set_gobernor_core_in_core "${x}" "powersave"
+	done
+	set_gobernor_core_in_core "0" "powersave"
+}
+
+if [ "${1}" == "gobernor" ]; then
+	GOB="${2}"
+	if [ "${GOB}" == "userspace" ]; then
+		if [[ ${3} == [0-9]* ]]; then
+			SPEED=${3}
+		fi
+		if [ "${4}" == "core" ]; then
+			set_gobernor_core_in_core "${5}" "userspace"
+			ret=$?
+			if [ $ret -eq 0 -a -n "${SPEED}" ]; then
+				set_speed_in_core "${5}" "${SPEED}"
+				exit 0
+			fi
+		else
+			for x in $(seq 0 `number_of_cores`); do
+				set_gobernor_core_in_core "${x}" "userspace"
+				ret=$?
+				if [ $ret -eq 0 -a -n "${SPEED}" ]; then
+					set_speed_in_core "${x}" "${SPEED}"
+				fi
+			done
+			exit 0
+		fi
+	else
+		if [ "${3}" == "core" ]; then
+			set_gobernor_core_in_core "${4}" "${GOB}"
+			exit 0
+		else
+			for x in $(seq 0 `number_of_cores`); do
+				set_gobernor_core_in_core "${x}" "${GOB}"
+			done
+			exit 0
+		fi
+	fi
+elif [ "${1}" == "speed" ]; then
+	if [ "${3}" == "core" ]; then
+		set_gobernor_core_in_core "${4}" "userspace"
+		ret=$?
+		if [ $ret -eq 0 ]; then
+			set_speed_in_core "${4}" "${2}"
+		fi
+		exit 0
+	else
+		for x in $(seq 0 `number_of_cores`); do
+			set_gobernor_core_in_core "${x}" "userspace"
+			ret=$?
+			if [ $ret -eq 0 ]; then
+				set_speed_in_core "${x}" "${2}"
+			fi
+		done
+		exit 0
+	fi
+elif [ "${1}" == "enable" ]; then
+	if [ "${2}" == "core" ]; then
+		set_enable_in_core ${3}
+		exit 0
+	else
+		for x in $(seq 1 `number_of_cores`); do
+			set_enable_in_core ${x}
+		done
+		exit 0
+	fi
+elif [ "${1}" == "disable" ]; then
+	if [ "${2}" == "core" ]; then
+		set_disable_in_core ${3}
+		exit 0
+	else
+		for x in $(seq 1 `number_of_cores`); do
+			set_disable_in_core ${x}
+		done
+		exit 0
+	fi
+elif [ "${1}" == "normal" ]; then
+	set_normal
+elif [ "${1}" == "offline" ]; then
+	set_offline
+elif [ -z "${1}" -o "${1}" == '--help' -o "${1}" == '-help' -o "${1}" == 'help' ]; then
+echo "Multicore Management by David B. Cortarello (Nomius) <nomius@users.berlios.de>
+usage: corectl OPT [CORE NUMBER]
+
+OPT:
+	gobernor [GOBERNOR]
+	speed    [SPEED]
+	enable
+	disable
+
+$(list_gobernors 0)
+$(list_speeds 0)
+"
+fi
+
