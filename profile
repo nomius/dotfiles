@@ -18,6 +18,10 @@ if [ -e ~/.bash/extras ]; then
 	. ~/.bash/extras
 fi
 
+if [ -e ~/.bash/dockerfunc ]; then
+	. ~/.bash/dockerfunc
+fi
+
 if [ -e ~/.bash/custom ]; then
 	. ~/.bash/custom
 fi
