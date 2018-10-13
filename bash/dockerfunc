@@ -17,6 +17,11 @@ dcleanup(){
 	mapfile -t images < <(docker images --filter dangling=true -q 2>/dev/null)
 	docker rmi "${images[@]}" 2>/dev/null
 }
+hostcleanup() {
+	for f in $(declare -f | grep hostess | sed -e 's/.*hostess add[[:blank:]]\+\([a-zA-z0-9_\$"]\+\)[[:blank:]]*.*/\1/g' | grep -v '\$'); do
+		[ "$(docker inspect --format "{{.State.Running}}" $f 2>/dev/null)" == "false" ] && sudo hostess rm $f && echo $f removed
+	done
+}
 del_stopped(){
 	local name=$1
 	[ -z "${name}" ] && return 1
