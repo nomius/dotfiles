@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+synclient TapButton1=1 TapButton2=3 TapButton3=2 HorizEdgeScroll=1
+
+xhost +local:root
+
+if [ -x /usr/bin/dbus-launch -a -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
+	eval `dbus-launch --sh-syntax --exit-with-session`
+	export DBUS_SESSION_BUS_ADDRESS
+	export DBUS_SESSION_BUS_PID
+fi
+
+hsetroot -center ~/.local/wallpapers/default.jpg &
+
+# launch tint2
+if [ -f ~/.config/tint2/tint2rc ]; then
+	tint2 &
+else
+	tint2 -c /usr/etc/xdg/tint2/tint2rc &
+fi
+
+# launch volumeicon
+if which volumeicon >/dev/null 2>&1; then
+	volumeicon &
+fi
+
+# launch conky (if you want conky, just uncomment this)
+if which conky >/dev/null 2>&1; then
+	conky &
+fi
