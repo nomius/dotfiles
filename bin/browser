@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -x
-
 case "$1" in
 	chromium)
 		shift
