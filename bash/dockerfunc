@@ -19,6 +19,7 @@ dcleanup(){
 }
 del_stopped(){
 	local name=$1
+	[ -z "${name}" ] && return 1
 	local state
 	state=$(docker inspect --format "{{.State.Running}}" "$name" 2>/dev/null)
 
@@ -237,6 +238,7 @@ dirssi() {
 }
 john(){
 	local file
+	[ -z "${file}" ] && return 1
 	file=$(realpath "$1")
 
 	docker run --rm -it \
@@ -286,6 +288,7 @@ masscan(){
 nes(){
 	del_stopped nes
 	local game=$1
+	[ -z "${game}" ] && return 1
 
 	docker run -d \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -391,6 +394,7 @@ skype(){
 }
 ssh2john(){
 	local file
+	[ -z "${file}" ] && return 1
 	file=$(realpath "$1")
 
 	docker run --rm -it \
@@ -423,6 +427,7 @@ dtelnet(){
 termboy(){
 	del_stopped termboy
 	local game=$1
+	[ -z "${game}" ] && return 1
 
 	docker run --rm -it \
 		--device /dev/snd \
