@@ -91,6 +91,7 @@ mouse_scroll_down = iconify
 battery = 1
 battery_low_status = 20
 battery_low_cmd = notify-send "battery low"
+battery_full_cmd = notify-send "battery full"
 battery_hide = 100
 bat1_font = Liberation Mono 8
 bat2_font = Liberation Mono 6
