@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo "$*" | osd_cat -p bottom -A right -o 0 -c 0
