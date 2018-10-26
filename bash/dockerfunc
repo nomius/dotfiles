@@ -163,10 +163,10 @@ dchrome(){
 }
 dfirefox(){
 	del_stopped firefox
+	relies_on pulseaudio
 
 	docker run -d \
 		--memory 2gb \
-		--net host \
 		--cpuset-cpus 0 \
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -178,13 +178,12 @@ dfirefox(){
 		-e "DISPLAY=unix${DISPLAY}" \
 		-e GDK_SCALE \
 		-e GDK_DPI_SCALE \
+		--link pulseaudio:pulseaudio \
+		-e PULSE_SERVER=pulseaudio \
 		--device /dev/snd \
 		--device /dev/dri \
 		--name firefox \
 		${DOCKER_REPO_PREFIX}/firefox "$@"
-
-	# exit current shell
-	exit 0
 }
 gimp(){
 	del_stopped gimp
@@ -357,15 +356,36 @@ privoxy(){
 pulseaudio(){
 	del_stopped pulseaudio
 
-	docker run -d \
-		-v /etc/localtime:/etc/localtime:ro \
-		--device /dev/snd \
+	docker run --rm -d \
 		-p 4713:4713 \
-		--restart always \
-		--group-add audio \
+		--device /dev/snd \
+		--device /dev/bus/usb \
+		-v /var/run/dbus:/var/run/dbus \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /etc/asound.conf:/etc/asound.conf:ro \
 		--name pulseaudio \
-		${DOCKER_REPO_PREFIX}/pulseaudio
+		woahbase/alpine-pulseaudio:x86_64
 }
+
+pavucontrol() {
+	del_stopped pavucontrol
+	relies_on pulseaudio
+
+	docker run --rm \
+		--device /dev/snd \
+		--device /dev/dri \
+		-v /var/run/dbus:/var/run/dbus \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-e "DISPLAY=unix${DISPLAY}" \
+		--link pulseaudio:pulseaudio \
+		-e DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS \
+		-e PULSE_SERVER=pulseaudio \
+		--group-add audio \
+		--name pavucontrol \
+		nomius/pavucontrol
+}
+
 remmina(){
 	del_stopped remmina
 
@@ -476,9 +496,6 @@ torbrowser(){
 		--device /dev/snd \
 		--name torbrowser \
 		${DOCKER_REPO_PREFIX}/tor-browser
-
-	# exit current shell
-	exit 0
 }
 tormessenger(){
 	del_stopped tormessenger
@@ -492,9 +509,6 @@ tormessenger(){
 		--device /dev/snd \
 		--name tormessenger \
 		${DOCKER_REPO_PREFIX}/tor-messenger
-
-	# exit current shell
-	exit 0
 }
 torproxy(){
 	del_stopped torproxy
