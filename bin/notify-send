@@ -7,7 +7,7 @@ PIPE="/tmp/dnotipipe"
 
 if [ ! -e "$PIPE" ]; then
   mkfifo "$PIPE"
-  (dzen2 < "$PIPE"
+  (dzen2 -p 5 < "$PIPE"
    rm -f "$PIPE") &
 fi
 
