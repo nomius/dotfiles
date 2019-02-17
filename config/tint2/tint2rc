@@ -24,6 +24,7 @@ panel_dock = 0
 wm_menu = 1
 panel_layer = normal
 panel_background_id = 1
+panel_items = TEEEEESBC
 
 # Panel Autohide
 autohide = 0
@@ -68,7 +69,7 @@ font_shadow = 0
 systray = 1
 systray_padding = 10 6 15
 systray_sort = left2right
-systray_background_id = 0
+systray_background_id = 2
 systray_icon_size = 16
 systray_icon_asb = 100 0 0
 
@@ -87,16 +88,72 @@ mouse_right = close
 mouse_scroll_up = toggle
 mouse_scroll_down = iconify
 
+# Execp 1 : print disk usage for the root partition
+execp = new
+execp_command = df -h | awk '$NF == "/" { print " "$6" "$2 " ("$5")  "}'
+execp_background_id = 2
+execp_interval = 10
+execp_centered = 1
+execp_font = Liberation Mono 9
+execp_font_color = #ffaaaa 100
+execp_padding = 0 0
+execp_tooltip = Root partition usage
+
+# Execp 2 : print the number of CPU cores
+execp = new
+execp_command = echo "$(nproc) cores  "
+execp_interval = 0
+execp_background_id = 2
+execp_centered = 1
+execp_font = Liberation Mono 9
+execp_font_color = #aaffaa 100
+execp_padding = 0 0
+execp_tooltip = Total amount of CPU 
+
+# Execp 3 : show the memory usage
+execp = new
+execp_command = awk '/MemTotal:/ {total=$2+0}; /MemAvailable:/ {free=$2+0}; END { used=total-free; percentage_used=used*100/total; printf "Mem: %0.2fGB (%d%%)  \n", used/(1024*1024), percentage_used }' /proc/meminfo
+execp_interval = 2
+execp_background_id = 2
+execp_continuous = 1
+execp_centered = 1
+execp_font = Liberation Mono 9
+execp_font_color = #ffffaa 100
+execp_padding = 0 1
+execp_tooltip = Memory used
+
+# Execp 4 : show the RTT to the gateway
+execp = new
+execp_command = awk '/:/ { print $1" "int($3 * 100 / 70)"% "; fflush(); }' /proc/net/wireless
+execp_continuous = 1
+execp_background_id = 2
+execp_interval = 5
+execp_markup = 1
+execp_font_color = #ffffdd 100
+execp_font = monospace 9
+execp_tooltip = Wireless connectivity
+
+# Execp 5 : show the RTT to the gateway
+execp = new
+execp_command = ping -i 1 -W 1 -O -D -n $(ip route | awk '/default via/ {print $3}') | awk '/no/ { print "<span foreground=\"#faa\">(timeout)  </span>"; fflush(); }; /time=/ { gsub(/time=/, "", $8); printf "<span foreground=\"#7af\">(%2.0f %s)</span>\n", $8, $9; fflush(); }'
+execp_continuous = 1
+execp_background_id = 2
+execp_interval = 1
+execp_markup = 1
+execp_font_color = #ffffdd 100
+execp_font = monospace 9
+execp_tooltip = Wireless connectivity
+
 # Battery
 battery = 1
-battery_low_status = 20
-battery_low_cmd = notify-send "battery low"
-battery_full_cmd = notify-send "battery full"
-battery_hide = 100
+battery_low_status = 10
+battery_low_cmd = notify-send "Notification: Low battery..."
+battery_full_cmd = notify-send "Notification: Full battery..."
+battery_hide = 101
 bat1_font = Liberation Mono 8
 bat2_font = Liberation Mono 6
-battery_font_color = #B5B5B5 100
-battery_padding = 5 0
+battery_font_color = #FFFFFF 100
+battery_padding = 1 0
 battery_background_id = 2
 
 # Clock
@@ -105,12 +162,10 @@ time1_font = Droid Sans 8
 time2_format = %d/%m
 time2_font = Droid Sans 8
 clock_font_color = #FFFFFF 100
-clock_tooltip = 
+clock_tooltip =
 clock_padding = 10 6
 clock_background_id = 2
-clock_lclick_command = gsimplecal
-time1_timezone = 
-time2_timezone = 
-clock_tooltip_timezone = 
+time1_timezone =
+time2_timezone =
+clock_tooltip_timezone =
 
-# End of config
