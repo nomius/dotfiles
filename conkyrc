@@ -36,10 +36,13 @@ ${color white}SYSTEM ${hr 1}${color}
 Hostname: $alignr$nodename
 Kernel: $alignr$kernel
 Uptime: $alignr$uptime
-MotherBoard: ${alignr}${hwmon 0 temp 2}C
-# | ${hwmon 0 temp 3}C
-System temperature: ${alignr}${hwmon 0 temp 1}C
-CPUs: ${alignr}${hwmon 1 temp 1}C | ${hwmon 1 temp 2}C | ${hwmon 1 temp 3}C | ${hwmon 1 temp 4}C | ${hwmon 1 temp 5}C
+
+CPU: ${alignr}${hwmon 1 temp 1}C  (Fan: ${hwmon 1 fan 1} RPM)
+Ambient: ${alignr}${hwmon 1 temp 2}C
+Memory: ${alignr}${hwmon 1 temp 3}C
+Motherboard: ${alignr}${hwmon 0 temp 2}C
+Wifi: ${alignr}${hwmon 1 temp 1}C
+
 
 Processes: ${alignr}$processes ($running_processes running)
 Load: ${alignr}$loadavg
@@ -71,11 +74,11 @@ ${color white}Filesystem ${hr 1}${color}
 Root: ${alignr}${fs_free /} / ${fs_size /}
 ${fs_bar 4 /}
 
-${color white}NETWORK (${wireless_essid wlo1} - ${addr wlo1}) ${hr 1}${color}
+${color white}NETWORK (${wireless_essid wlp2s0} - ${addr wlp2s0}) ${hr 1}${color}
 
-Down ${downspeed wlo1} ${alignr}Up ${upspeed wlo1}
-${downspeedgraph wlo1 25,107} ${alignr}${upspeedgraph wlo1 25,107}
-Total ${totaldown wlo1} ${alignr}Total ${totalup wlo1}
+Down ${downspeed wlp2s0} ${alignr}Up ${upspeed wlp2s0}
+${downspeedgraph wlp2s0 25,107} ${alignr}${upspeedgraph wlp2s0 25,107}
+Total ${totaldown wlp2s0} ${alignr}Total ${totalup wlp2s0}
 
 Connections ${alignr} Remote Service/Port
  ${tcp_portmon 1 32768 rip 0} ${alignr} ${tcp_portmon 1 32768 lservice 0}
