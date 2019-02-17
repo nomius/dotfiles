@@ -1,11 +1,9 @@
-#!/bin/bash
-#
-# dvolbar - OSD Volume utility 
-#
+#!/usr/bin/env bash
 
-#Customize this stuff
-CARD=1
-IF="Master"         # audio channel: Master|PCM
+. ~/.audiosettings
+
+# Colors, fonts and layouts
+
 SECS="1"            # sleep $SECS
 BG="#555555"        # background colour of window
 FG="#ffffff"        # foreground colour of text/icon
@@ -17,72 +15,93 @@ BAR_WIDTH="165"     # width of volume bar
 ICON=~/.local/pixmaps/volume.xpm
 FONT="-*-dina-medium-r-*-*-13-*-*-*-*-*-*-*"
 
-#Probably do not customize
 PIPE="/tmp/dvolpipe"
 
 err() {
-  echo "$1"
-  exit 1
+	echo "$1"
+	exit 1
 }
 
 usage() {
-  echo "usage: dvol [option] [argument]"
-  echo
-  echo "Options:"
-  echo "     -i, --increase - increase volume by \`argument'"
-  echo "     -d, --decrease - decrease volume by \`argument'"
-  echo "     -t, --toggle   - toggle mute on and off"
-  echo "     -h, --help     - display this"
-  exit
+	cat << EOF
+usage: dvol [option] [argument]
+
+Options:
+     -i, --increase - increase volume by 'argument'
+     -d, --decrease - decrease volume by 'argument'
+     -t, --toggle   - toggle mute on and off
+     -h, --help     - display this
+EOF
+	exit
 }
 
-#Argument Parsing
+toggle() {
+	if [ $USE_PULSE -eq 0 ]; then
+		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} toggle &>/dev/null
+		amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | (grep -q '\[off\]' && echo 0 || amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | awk -F "[][%]" '/dB/ { print $2 }')
+	else
+		pactl set-sink-mute ${PULSE_SINK} toggle
+		pactl list sinks | grep '^[[:space:]]Mute:' | head -n $(( ${PULSE_SINK} + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,' | (grep "yes" && echo 0 || pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( ${PULSE_SINK} + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')
+	fi
+}
+
+increase() {
+	if [ $USE_PULSE -eq 0 ]; then
+		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} unmute &>/dev/null
+		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} "${1}%+"
+		amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | awk -F "[][%]" '/dB/ { print $2 }'
+	else
+		pactl set-sink-mute ${PULSE_SINK} off
+		pactl set-sink-volume ${PULSE_SINK} +${1}%
+		pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( ${PULSE_SINK} + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'
+	fi
+}
+
+decrease() {
+	if [ $USE_PULSE -eq 0 ]; then
+		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} unmute &>/dev/null
+		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} "${1}%-"
+		amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | awk -F "[][%]" '/dB/ { print $2 }'
+	else
+		pactl set-sink-mute ${PULSE_SINK} off
+		pactl set-sink-volume ${PULSE_SINK} -"${1}"%
+		pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( ${PULSE_SINK} + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'
+	fi
+}
+
 case "$1" in
-  '-i'|'--increase')
-    [ -z "$2" ] && err "No argument specified for increase."
-    [ -n "$(tr -d [0-9] <<<$2)" ] && err "The argument needs to be an integer."
-    AMIXARG="${2}%+"
-    ;;
-  '-d'|'--decrease')
-    [ -z "$2" ] && err "No argument specified for decrease."
-    [ -n "$(tr -d [0-9] <<<$2)" ] && err "The argument needs to be an integer."
-    AMIXARG="${2}%-"
-    ;;
-  '-t'|'--toggle')
-    AMIXARG="toggle"
-    ;;
-  ''|'-h'|'--help')
-    usage
-    ;;
-  *)
-    err "Unrecognized option \`$1', see dvol --help"
-    ;;
+	'-i'|'--increase')
+		[ -z "$2" ] && err "No argument specified for increase."
+		[ -n "$(tr -d [0-9] <<<$2)" ] && err "The argument needs to be an integer."
+		VOL=$(increase ${2})
+	;;
+	'-d'|'--decrease')
+		[ -z "$2" ] && err "No argument specified for decrease."
+		[ -n "$(tr -d [0-9] <<<$2)" ] && err "The argument needs to be an integer."
+		VOL=$(decrease ${2})
+	;;
+	'-t'|'--toggle')
+		VOL=$(toggle)
+	;;
+	''|'-h'|'--help')
+		usage
+	;;
+	*)
+		err "Unrecognized option \`$1', see dvol --help"
+	;;
 esac
 
-SIZE=$(xrandr | grep \* | awk '{print $1}')
+SIZE=$(xdpyinfo | awk '/dimensions:/ {print $2}')
 XPOS=$(($(echo ${SIZE} | awk -F x '{print $1}') - 258))
 YPOS=$(($(echo ${SIZE} | awk -F x '{print $2}') - 70))
 
-#Actual volume changing (readability low)
-if [ ${AMIXARG} != 'toggle' ]; then
-	amixer sset -c "${CARD}" "${IF}" unmute
-fi
-AMIXOUT="$(amixer sset -c "${CARD}" "$IF" "$AMIXARG" | tail -n 1)"
-MUTE="$(cut -d '[' -f 4 <<<"$AMIXOUT")"
-if [ "$MUTE" = "off]" ]; then
-  VOL="0"
-else
-  VOL="$(cut -d '[' -f 2 <<<"$AMIXOUT" | sed 's/%.*//g')"
-fi
-
-#Using named pipe to determine whether previous call still exists
-#Also prevents multiple volume bar instances
+# Using named pipe to determine whether previous call still exists
+# Also prevents multiple volume bar instances
 if [ ! -e "$PIPE" ]; then
-  mkfifo "$PIPE"
-  (dzen2 -tw "$WIDTH" -h "$HEIGHT" -x "$XPOS" -y "$YPOS" -fn "$FONT" -bg "$BG" -fg "$FG" < "$PIPE" 
-   rm -f "$PIPE") &
+	mkfifo "$PIPE"
+	(dzen2 -e "button1=exec:urxvt -e ~/.bin/pulsemixer" -tw "$WIDTH" -h "$HEIGHT" -x "$XPOS" -y "$YPOS" -fn "$FONT" -bg "$BG" -fg "$FG" < "$PIPE"
+		rm -f "$PIPE") &
 fi
 
-#Feed the pipe!
+# Feed the pipe!
 (echo "$VOL" | gdbar -l "^i(${ICON}) $VOL% " -fg "$BAR_FG" -bg "$BAR_BG" -w "$BAR_WIDTH" ; sleep "$SECS") > "$PIPE"
-#(echo "$VOL" | gdbar -l "^i(${ICON})" -fg "$BAR_FG" -bg "$BAR_BG" -w "$BAR_WIDTH" ; sleep "$SECS") > "$PIPE"
