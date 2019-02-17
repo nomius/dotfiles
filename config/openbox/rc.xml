@@ -196,7 +196,13 @@
   <keybind key="C-A-Left">
     <action name="GoToDesktop"><to>left</to><wrap>yes</wrap></action>
   </keybind>
+  <keybind key="C-mod5-Left">
+    <action name="GoToDesktop"><to>left</to><wrap>yes</wrap></action>
+  </keybind>
   <keybind key="C-A-Right">
+    <action name="GoToDesktop"><to>right</to><wrap>yes</wrap></action>
+  </keybind>
+  <keybind key="C-mod5-Right">
     <action name="GoToDesktop"><to>right</to><wrap>yes</wrap></action>
   </keybind>
   <keybind key="C-A-Up">
@@ -343,27 +349,36 @@
       <command>xdotool click 3</command>
     </action>
   </keybind>
-  <keybind key="XF86AudioLowerVolume">
+  <keybind key="XF86Search">
     <action name="Execute">
-      <execute>amixer -c 0 set Master unmute</execute>
-    </action>
-    <action name="Execute">
-      <execute>amixer -c 0 set Master 2-</execute>
+      <execute>lxrandr</execute>
     </action>
   </keybind>
-    <keybind key="XF86AudioRaiseVolume">
-      <action name="Execute">
-        <execute>amixer -c 0 set Master unmute</execute>
-      </action>
-      <action name="Execute">
-        <execute>amixer -c 0 set Master 2+</execute>
-      </action>
-    </keybind>
-    <keybind key="XF86AudioMute">
-      <action name="Execute">
-        <execute>amixer -c 0 set Master toggle</execute>
-      </action>
-    </keybind>
+  <keybind key="XF86AudioLowerVolume">
+    <action name="Execute">
+      <execute>/home/nomius/.bin/setvolume -d 2</execute>
+    </action>
+  </keybind>
+  <keybind key="XF86AudioRaiseVolume">
+    <action name="Execute">
+      <execute>/home/nomius/.bin/setvolume -i 2</execute>
+    </action>
+  </keybind>
+  <keybind key="XF86AudioMute">
+    <action name="Execute">
+      <execute>/home/nomius/.bin/setvolume -t</execute>
+    </action>
+  </keybind>
+  <keybind key="Num_Lock">
+    <action name="Execute">
+      <execute>statekeys Num</execute>
+    </action>
+  </keybind>
+  <keybind key="Caps_Lock">
+    <action name="Execute">
+      <execute>statekeys Caps</execute>
+    </action>
+  </keybind>
 </keyboard>
 
 <mouse>
