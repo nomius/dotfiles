@@ -1,3 +1,16 @@
 #!/usr/bin/env bash
 
-echo "$*" | osd_cat -p bottom -A right -o 0 -c 0
+ICON=~/.local/pixmaps/alert.xpm
+FONT="-*-dina-medium-r-*-*-13-*-*-*-*-*-*-*"
+
+PIPE="/tmp/dnotipipe"
+
+if [ ! -e "$PIPE" ]; then
+  mkfifo "$PIPE"
+  (dzen2 < "$PIPE"
+   rm -f "$PIPE") &
+fi
+
+#echo "$*" | dzen2 -p 5
+
+(echo "^i(${ICON}) $*"; sleep 1) > "$PIPE"
