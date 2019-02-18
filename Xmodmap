@@ -1,3 +1,10 @@
 ! Yes, I like the *Windows* key to be the mouse right click
 
 keycode 133 = Pointer_Button3
+
+! Some keycodes I need :-)
+
+keycode 148 = Home
+keycode 173 = End
+keycode 172 = Prior
+keycode 171 = Next
