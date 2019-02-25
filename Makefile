@@ -1,5 +1,5 @@
 .PHONY: all
-all: bin dotfiles bash local openbox tint2
+all: bin dotfiles bash local urxvt openbox tint2
 
 .PHONY: bin
 bin:
@@ -20,6 +20,12 @@ bash:
 local:
 	mkdir -p $(HOME)/.local/wallpapers
 	for x in $(shell find local/wallpapers -maxdepth 1 -type f -o -type l); do ln -sf $(CURDIR)/$$x $(HOME)/.local/wallpapers/$$(basename $$x); done
+
+.PHONY: urxvt
+urxvt:
+	mkdir -p $(HOME)/.urxvt/ext
+	for x in $(shell find urxvt/ext -maxdepth 1 -type f -o -type l); do ln -sf $(CURDIR)/$$x $(HOME)/.urxvt/ext/$$(basename $$x); done
+
 
 .PHONY: openbox
 openbox:
