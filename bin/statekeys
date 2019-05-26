@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+sleep 0.2
+[ "$1" = "Caps" ] && notify-send "Notification: Caps lock $(xset q | awk '/Caps/ {print $4}')..."
+[ "$1" = "Num" ] && notify-send "Notification: Numeric pad $(xset q | awk '/Num/ {print $8}')..."
