@@ -20,6 +20,8 @@ bash:
 local:
 	mkdir -p $(HOME)/.local/wallpapers
 	for x in $(shell find local/wallpapers -maxdepth 1 -type f -o -type l); do ln -sf $(CURDIR)/$$x $(HOME)/.local/wallpapers/$$(basename $$x); done
+	mkdir -p $(HOME)/.local/pixmaps
+	for x in $(shell find local/pixmaps -maxdepth 1 -type f -o -type l); do ln -sf $(CURDIR)/$$x $(HOME)/.local/pixmaps/$$(basename $$x); done
 
 .PHONY: urxvt
 urxvt:
