@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. ~/.audiosettings
+. ${HOME}/.config/audio.conf
 
 # Colors, fonts and layouts
 
@@ -12,7 +12,7 @@ BAR_BG="#444444"    # background colour of volume bar
 HEIGHT="30"         # window height
 WIDTH="250"         # window width
 BAR_WIDTH="165"     # width of volume bar
-ICON=~/.local/pixmaps/volume.xpm
+ICON=/usr/share/pixmaps/volume.xpm
 FONT="-*-dina-medium-r-*-*-13-*-*-*-*-*-*-*"
 
 PIPE="/tmp/dvolpipe"
@@ -40,8 +40,12 @@ toggle() {
 		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} toggle &>/dev/null
 		amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | (grep -q '\[off\]' && echo 0 || amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | awk -F "[][%]" '/dB/ { print $2 }')
 	else
-		pactl set-sink-mute ${PULSE_SINK} toggle
-		pactl list sinks | grep '^[[:space:]]Mute:' | head -n $(( ${PULSE_SINK} + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,' | (grep "yes" && echo 0 || pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( ${PULSE_SINK} + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')
+		pulsemixer --id ${PULSE_SINK} --toggle-mute
+		if [ "$(pulsemixer --id ${PULSE_SINK} --get-mute)" = "0" ]; then
+			echo 0
+		else
+			pulsemixer --id ${PULSE_SINK} --get-volume | awk '{print $1}'
+		fi
 	fi
 }
 
@@ -51,9 +55,9 @@ increase() {
 		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} "${1}%+"
 		amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | awk -F "[][%]" '/dB/ { print $2 }'
 	else
-		pactl set-sink-mute ${PULSE_SINK} off
-		pactl set-sink-volume ${PULSE_SINK} +${1}%
-		pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( ${PULSE_SINK} + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'
+		pulsemixer --id ${PULSE_SINK} --unmute
+		pulsemixer --id ${PULSE_SINK} --change-volume "+${1}"
+		pulsemixer --id ${PULSE_SINK} --get-volume | awk '{print $1}'
 	fi
 }
 
@@ -63,9 +67,17 @@ decrease() {
 		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} "${1}%-"
 		amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | awk -F "[][%]" '/dB/ { print $2 }'
 	else
-		pactl set-sink-mute ${PULSE_SINK} off
-		pactl set-sink-volume ${PULSE_SINK} -"${1}"%
-		pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( ${PULSE_SINK} + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,'
+		pulsemixer --id ${PULSE_SINK} --unmute
+		pulsemixer --id ${PULSE_SINK} --change-volume "-${1}"
+		pulsemixer --id ${PULSE_SINK} --get-volume | awk '{print $1}'
+	fi
+}
+
+open_mixer() {
+	if [ $USE_PULSE -eq 0 ]; then
+		urxvt -bg black -fg white -geometry 110x25 -e bash -c "LC_ALL=C alsamixer" &
+	else
+		urxvt -bg black -fg white -geometry 110x25 -e bash -c "LC_ALL=C pulsemixer" &
 	fi
 }
 
@@ -86,6 +98,10 @@ case "$1" in
 	''|'-h'|'--help')
 		usage
 	;;
+	'open-mixer')
+		open_mixer
+		exit 0
+	;;
 	*)
 		err "Unrecognized option \`$1', see dvol --help"
 	;;
@@ -99,7 +115,7 @@ YPOS=$(($(echo ${SIZE} | awk -F x '{print $2}') - 70))
 # Also prevents multiple volume bar instances
 if [ ! -e "$PIPE" ]; then
 	mkfifo "$PIPE"
-	(dzen2 -e "button1=exec:urxvt -e ~/.bin/pulsemixer" -tw "$WIDTH" -h "$HEIGHT" -x "$XPOS" -y "$YPOS" -fn "$FONT" -bg "$BG" -fg "$FG" < "$PIPE"
+	(dzen2 -e "button1=exec:$0 open-mixer" -tw "$WIDTH" -h "$HEIGHT" -x "$XPOS" -y "$YPOS" -fn "$FONT" -bg "$BG" -fg "$FG" < "$PIPE"
 		rm -f "$PIPE") &
 fi
 
