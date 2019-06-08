@@ -1,5 +1,5 @@
 .PHONY: all
-all: bin dotfiles bash local urxvt openbox tint2
+all: bin dotfiles bash local urxvt openbox tint2 config_files
 
 .PHONY: bin
 bin:
@@ -28,7 +28,6 @@ urxvt:
 	mkdir -p $(HOME)/.urxvt/ext
 	for x in $(shell find urxvt/ext -maxdepth 1 -type f -o -type l); do ln -sf $(CURDIR)/$$x $(HOME)/.urxvt/ext/$$(basename $$x); done
 
-
 .PHONY: openbox
 openbox:
 	mkdir -p $(HOME)/.config/openbox
@@ -38,4 +37,10 @@ openbox:
 tint2:
 	mkdir -p $(HOME)/.config/tint2
 	ln -sf $(CURDIR)/config/tint2/tint2rc $(HOME)/.config/tint2/tint2rc
+
+.PHONY: config_files
+config_files:
+	mkdir -p $(HOME)/.config
+	for x in $(shell find config -maxdepth 1 -type f); do ln -sf $(CURDIR)/$$x $(HOME)/.config/$$(basename $$x); done
+
 
