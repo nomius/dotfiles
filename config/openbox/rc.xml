@@ -196,13 +196,7 @@
   <keybind key="C-A-Left">
     <action name="GoToDesktop"><to>left</to><wrap>yes</wrap></action>
   </keybind>
-  <keybind key="C-mod5-Left">
-    <action name="GoToDesktop"><to>left</to><wrap>yes</wrap></action>
-  </keybind>
   <keybind key="C-A-Right">
-    <action name="GoToDesktop"><to>right</to><wrap>yes</wrap></action>
-  </keybind>
-  <keybind key="C-mod5-Right">
     <action name="GoToDesktop"><to>right</to><wrap>yes</wrap></action>
   </keybind>
   <keybind key="C-A-Up">
@@ -356,17 +350,17 @@
   </keybind>
   <keybind key="XF86AudioLowerVolume">
     <action name="Execute">
-      <execute>/home/nomius/.bin/setvolume -d 2</execute>
+      <execute>kwort-mixer -d 1</execute>
     </action>
   </keybind>
   <keybind key="XF86AudioRaiseVolume">
     <action name="Execute">
-      <execute>/home/nomius/.bin/setvolume -i 2</execute>
+      <execute>kwort-mixer -i 1</execute>
     </action>
   </keybind>
   <keybind key="XF86AudioMute">
     <action name="Execute">
-      <execute>/home/nomius/.bin/setvolume -t</execute>
+      <execute>kwort-mixer -t</execute>
     </action>
   </keybind>
   <keybind key="Num_Lock">
