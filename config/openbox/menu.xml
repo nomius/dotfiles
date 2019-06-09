@@ -159,21 +159,21 @@
 </menu>
 
 <menu id="apps-multimedia-menu" label="Multimedia">
-  <item label="Music On Console">
+  <item label="Museeks">
     <action name="Execute">
-      <command>urxvt -e mocp</command>
+      <command>museeks</command>
       <startupnotify>
         <enabled>yes</enabled>
-        <wmclass>mocp</wmclass>
+        <wmclass>Museeks</wmclass>
       </startupnotify>
     </action>
   </item>
-  <item label="Alsa Mixer">
+  <item label="Volume mixer">
     <action name="Execute">
-      <command>urxvt -e alsamixer</command>
+      <command>kwort-mixer open-mixer</command>
       <startupnotify>
         <enabled>yes</enabled>
-        <wmclass>Alsa-Mixer</wmclass>
+        <wmclass>Kwort-Mixer</wmclass>
       </startupnotify>
     </action>
   </item>
