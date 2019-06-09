@@ -31,6 +31,7 @@ Options:
      -d, --decrease - decrease volume by 'argument'
      -t, --toggle   - toggle mute on and off
      -h, --help     - display this
+     open-mixer     - Open volume mixer (alsamixer or pulsemixer)
 EOF
 	exit
 }
