@@ -40,7 +40,12 @@ case "$opt" in
 		fi
 	;;
 	*)
-		opt=$(printf "chromium\nbrave\nfirefox\nchrome\n" | dmenu -p "Select the browser you want to use (depends on availability)")
+		for x in firefox chrome brave chromium; do
+			if which $x &>/dev/null; then
+				[ -n "${available}" ] && available="${available}\n${x}" || available="${x}"
+			fi
+		done
+		opt=$(printf "${available}\n" | dmenu -p "Select the browser you want to use (depends on availability)")
 		echo "BROWSER=$opt" > $HOME/.config/browser.conf
 		exec ${0} ${opt}
 	;;
