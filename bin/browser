@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 
-if [ "$1" != "" ]; then
-	opt=$1
-	shift
-else
-	. $HOME/.config/browser.conf &>/dev/null
-	[ -n "${BROWSER}" ] && opt=${BROWSER} || opt=""
-fi
+. $HOME/.config/browser.conf &>/dev/null
 
-case "$opt" in
+case "$BROWSER" in
 	chromium)
 		if [ -e /usr/bin/chromium ]; then
 			exec /usr/bin/chromium $*
@@ -45,8 +39,8 @@ case "$opt" in
 				[ -n "${available}" ] && available="${available}\n${x}" || available="${x}"
 			fi
 		done
-		opt=$(printf "${available}\n" | dmenu -p "Select the browser you want to use (depends on availability)")
-		echo "BROWSER=$opt" > $HOME/.config/browser.conf
-		exec ${0} ${opt}
+		BROWSER=$(printf "${available}\n" | dmenu -p "Select the browser you want to use (depends on availability)")
+		echo "BROWSER=$BROWSER" > $HOME/.config/browser.conf
+		exec ${0} $*
 	;;
 esac
