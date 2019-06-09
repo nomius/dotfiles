@@ -41,11 +41,11 @@ toggle() {
 		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} toggle &>/dev/null
 		amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | (grep -q '\[off\]' && echo 0 || amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | awk -F "[][%]" '/dB/ { print $2 }')
 	else
-		pulsemixer --id ${PULSE_SINK} --toggle-mute
-		if [ "$(pulsemixer --id ${PULSE_SINK} --get-mute)" = "0" ]; then
+		pulsemixer --toggle-mute
+		if [ "$(pulsemixer --get-mute)" = "1" ]; then
 			echo 0
 		else
-			pulsemixer --id ${PULSE_SINK} --get-volume | awk '{print $1}'
+			pulsemixer --get-volume | awk '{print $1}'
 		fi
 	fi
 }
@@ -56,9 +56,9 @@ increase() {
 		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} "${1}%+"
 		amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | awk -F "[][%]" '/dB/ { print $2 }'
 	else
-		pulsemixer --id ${PULSE_SINK} --unmute
-		pulsemixer --id ${PULSE_SINK} --change-volume "+${1}"
-		pulsemixer --id ${PULSE_SINK} --get-volume | awk '{print $1}'
+		pulsemixer --unmute
+		pulsemixer --change-volume "+${1}"
+		pulsemixer --get-volume | awk '{print $1}'
 	fi
 }
 
@@ -68,9 +68,9 @@ decrease() {
 		amixer sset -c ${ALSA_CARD} ${ALSA_CHANNEL} "${1}%-"
 		amixer sget -c ${ALSA_CARD} ${ALSA_CHANNEL} | awk -F "[][%]" '/dB/ { print $2 }'
 	else
-		pulsemixer --id ${PULSE_SINK} --unmute
-		pulsemixer --id ${PULSE_SINK} --change-volume "-${1}"
-		pulsemixer --id ${PULSE_SINK} --get-volume | awk '{print $1}'
+		pulsemixer --unmute
+		pulsemixer --change-volume "-${1}"
+		pulsemixer --get-volume | awk '{print $1}'
 	fi
 }
 
