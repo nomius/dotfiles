@@ -13,8 +13,8 @@ dotfiles:
 
 .PHONY: bash
 bash:
-	mkdir -p $(HOME)/.bash
-	for x in $(shell find bash -maxdepth 1 -type f); do ln -sf $(CURDIR)/$$x $(HOME)/.bash/$$(basename $$x); done
+	mkdir -p $(HOME)/.profile.d
+	for x in $(shell find profile.d -maxdepth 1 -type f); do ln -sf $(CURDIR)/$$x $(HOME)/.profile.d/$$(basename $$x); done
 
 .PHONY: local
 local:
@@ -42,5 +42,4 @@ tint2:
 config_files:
 	mkdir -p $(HOME)/.config
 	for x in $(shell find config -maxdepth 1 -type f); do ln -sf $(CURDIR)/$$x $(HOME)/.config/$$(basename $$x); done
-
 
