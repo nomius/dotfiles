@@ -13,7 +13,7 @@ URxvt.visualBell: blue
 
 ! Clickable urls
 URxvt.perl-ext: default,matcher
-URxvt.perl-ext-common:      default,matcher,selection-to-clipboard,clipboard
+URxvt.perl-ext-common:      default,matcher
 URxvt.url-launcher:         browser
 URxvt.matcher.button:       1
 URxvt.url-select.underline: true
