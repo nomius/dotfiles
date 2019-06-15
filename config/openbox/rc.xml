@@ -338,6 +338,15 @@
       <command>browser</command>
     </action>
   </keybind>
+  <keybind key="A-c">
+    <action name="Execute">
+      <startupnotify>
+        <enabled>true</enabled>
+        <name>Kwort-Mixer</name>
+      </startupnotify>
+      <command>kwort-mixer open-mixer</command>
+    </action>
+  </keybind>
   <keybind key="Pointer_Button3">
     <action name="Execute">
       <command>xdotool click 3</command>
