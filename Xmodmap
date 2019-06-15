@@ -8,3 +8,4 @@ keycode 148 = Home
 keycode 173 = End
 keycode 172 = Prior
 keycode 171 = Next
+keycode 108 = Alt_L
