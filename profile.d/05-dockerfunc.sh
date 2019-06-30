@@ -82,14 +82,14 @@ nginx_config(){
 	# open browser
 	browser "http://${server}"
 }
-aws(){
+daws(){
 	docker run -it --rm \
 		-v "${HOME}/.aws:/root/.aws" \
 		--log-driver none \
 		--name aws \
 		${DOCKER_REPO_PREFIX}/awscli "$@"
 }
-az(){
+daz(){
 	docker run -it --rm \
 		-v "${HOME}/.azure:/root/.azure" \
 		--log-driver none \
@@ -105,7 +105,7 @@ dgcloud(){
 		${DOCKER_REPO_PREFIX}/gcloud "$@"
 }
 
-cadvisor(){
+dcadvisor(){
 	docker run -d \
 		--restart always \
 		-v /:/rootfs:ro \
@@ -185,7 +185,7 @@ dfirefox(){
 		--name firefox \
 		${DOCKER_REPO_PREFIX}/firefox "$@"
 }
-gimp(){
+dgimp(){
 	del_stopped gimp
 
 	docker run -d \
@@ -199,26 +199,26 @@ gimp(){
 		--name gimp \
 		${DOCKER_REPO_PREFIX}/gimp
 }
-hollywood(){
+dhollywood(){
 	docker run --rm -it \
 		--name hollywood \
 		${DOCKER_REPO_PREFIX}/hollywood
 }
-htop(){
+dhtop(){
 	docker run --rm -it \
 		--pid host \
 		--net none \
 		--name htop \
 		${DOCKER_REPO_PREFIX}/htop
 }
-htpasswd(){
+dhtpasswd(){
 	docker run --rm -it \
 		--net none \
 		--name htpasswd \
 		--log-driver none \
 		${DOCKER_REPO_PREFIX}/htpasswd "$@"
 }
-http(){
+dhttp(){
 	docker run -t --rm \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		--log-driver none \
@@ -240,7 +240,7 @@ dirssi() {
 		--name irssi \
 		${DOCKER_REPO_PREFIX}/irssi
 }
-john(){
+djohn(){
 	local file
 	[ -z "${file}" ] && return 1
 	file=$(realpath "$1")
@@ -249,7 +249,7 @@ john(){
 		-v "${file}:/root/$(basename "${file}")" \
 		${DOCKER_REPO_PREFIX}/john "$@"
 }
-kvm(){
+dkvm(){
 	del_stopped kvm
 	relies_on pulseaudio
 
@@ -268,7 +268,7 @@ kvm(){
 		--privileged \
 		${DOCKER_REPO_PREFIX}/kvm
 }
-libreoffice(){
+dlibreoffice(){
 	del_stopped libreoffice
 
 	docker run -d \
@@ -281,7 +281,7 @@ libreoffice(){
 		--name libreoffice \
 		${DOCKER_REPO_PREFIX}/libreoffice
 }
-masscan(){
+dmasscan(){
 	docker run -it --rm \
 		--log-driver none \
 		--net host \
@@ -289,7 +289,7 @@ masscan(){
 		--name masscan \
 		${DOCKER_REPO_PREFIX}/masscan "$@"
 }
-nes(){
+dnes(){
 	del_stopped nes
 	local game=$1
 	[ -z "${game}" ] && return 1
@@ -302,12 +302,12 @@ nes(){
 		--name nes \
 		${DOCKER_REPO_PREFIX}/nes "/games/${game}.rom"
 }
-netcat(){
+dnetcat(){
 	docker run --rm -it \
 		--net host \
 		${DOCKER_REPO_PREFIX}/netcat "$@"
 }
-nginx(){
+dnginx(){
 	del_stopped nginx
 
 	docker run -d \
@@ -325,7 +325,7 @@ dnmap(){
 		--net host \
 		${DOCKER_REPO_PREFIX}/nmap "$@"
 }
-pandoc(){
+dpandoc(){
 	local file=${*: -1}
 	local lfile
 	lfile=$(readlink -m "$(pwd)/${file}")
@@ -339,7 +339,7 @@ pandoc(){
 		--name pandoc \
 		${DOCKER_REPO_PREFIX}/pandoc "${args}" "${rfile}"
 }
-privoxy(){
+dprivoxy(){
 	del_stopped privoxy
 	relies_on torproxy
 
@@ -353,7 +353,7 @@ privoxy(){
 
 	sudo hostess add privoxy "$(docker inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' privoxy)"
 }
-pulseaudio(){
+dpulseaudio(){
 	del_stopped pulseaudio
 
 	docker run --rm -d \
@@ -367,7 +367,7 @@ pulseaudio(){
 		woahbase/alpine-pulseaudio:x86_64
 }
 
-pavucontrol() {
+dpavucontrol() {
 	del_stopped pavucontrol
 	relies_on pulseaudio
 
@@ -385,7 +385,7 @@ pavucontrol() {
 		nomius/pavucontrol
 }
 
-remmina(){
+dremmina(){
 	del_stopped remmina
 
 	docker run -d \
@@ -399,7 +399,7 @@ remmina(){
 		--net host \
 		${DOCKER_REPO_PREFIX}/remmina
 }
-skype(){
+dskype(){
 	del_stopped skype
 	relies_on pulseaudio
 
@@ -416,7 +416,7 @@ skype(){
 		--name skype \
 		${DOCKER_REPO_PREFIX}/skype
 }
-ssh2john(){
+dssh2john(){
 	local file
 	[ -z "${file}" ] && return 1
 	file=$(realpath "$1")
@@ -426,7 +426,7 @@ ssh2john(){
 		--entrypoint ssh2john \
 		${DOCKER_REPO_PREFIX}/john "$@"
 }
-steam(){
+dsteam(){
 	del_stopped steam
 	relies_on pulseaudio
 
@@ -448,7 +448,7 @@ dtelnet(){
 		--log-driver none \
 		${DOCKER_REPO_PREFIX}/telnet "$@"
 }
-termboy(){
+dtermboy(){
 	del_stopped termboy
 	local game=$1
 	[ -z "${game}" ] && return 1
@@ -458,7 +458,7 @@ termboy(){
 		--name termboy \
 		${DOCKER_REPO_PREFIX}/nes "/games/${game}.rom"
 }
-terraform(){
+dterraform(){
 	docker run -it --rm \
 		-v "${HOME}:${HOME}:ro" \
 		-v "$(pwd):/usr/src/repo" \
@@ -469,7 +469,7 @@ terraform(){
 		-e SSH_AUTH_SOCK \
 		${DOCKER_REPO_PREFIX}/terraform "$@"
 }
-tor(){
+dtor(){
 	del_stopped tor
 
 	docker run -d \
@@ -483,7 +483,7 @@ tor(){
 	# validate we are running through tor
 	browser "https://check.torproject.org/"
 }
-torbrowser(){
+dtorbrowser(){
 	del_stopped torbrowser
 
 	docker run -d \
@@ -496,7 +496,7 @@ torbrowser(){
 		--name torbrowser \
 		${DOCKER_REPO_PREFIX}/tor-browser
 }
-tormessenger(){
+dtormessenger(){
 	del_stopped tormessenger
 
 	docker run -d \
@@ -509,7 +509,7 @@ tormessenger(){
 		--name tormessenger \
 		${DOCKER_REPO_PREFIX}/tor-messenger
 }
-torproxy(){
+dtorproxy(){
 	del_stopped torproxy
 
 	docker run -d \
@@ -543,7 +543,7 @@ dtransmission(){
 	sudo hostess add transmission "$(docker inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' transmission)"
 	browser "http://transmission:9091"
 }
-virsh(){
+dvirsh(){
 	relies_on kvm
 
 	docker run -it --rm \
@@ -553,7 +553,7 @@ virsh(){
 		--net container:kvm \
 		${DOCKER_REPO_PREFIX}/libvirt-client "$@"
 }
-virt_viewer(){
+dvirt_viewer(){
 	relies_on kvm
 
 	docker run -it --rm \
@@ -568,7 +568,7 @@ virt_viewer(){
 		${DOCKER_REPO_PREFIX}/virt-viewer "$@"
 }
 alias virt-viewer="virt_viewer"
-vlc(){
+dvlc(){
 	del_stopped vlc
 	relies_on pulseaudio
 
@@ -588,7 +588,7 @@ vlc(){
 		--name vlc \
 		${DOCKER_REPO_PREFIX}/vlc
 }
-wireshark(){
+dwireshark(){
 	del_stopped wireshark
 
 	docker run -d \
