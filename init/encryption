@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+
+ETAB=/etc/etab
+DECRYPTED=()
+
+decrypt() {
+	dir=$1
+	keyf=$2
+	EFLAG=$dir/.decrypted
+
+	[ ! -d "${dir}" ] && return 1
+
+	cat ${EFLAG} &>/dev/null
+	if [ $? -eq 0 ]; then
+		echo "decrypted" > $EFLAG
+		echo "Path is already decrypted"
+		return 0
+	fi
+
+	if [ -z "${keyf}" ]; then
+		keyf=$(awk -F '[[:space:]]' -vdir=${dir} '$1 == dir {print $2}' ${ETAB})
+		[ $? -ne 0 ] && return 1
+	fi
+	if [ "${keyf:0:2}" = "f:" ]; then
+		key=$(cat ${keyf:2})
+		[ $? -ne 0 ] && return 1
+	else
+		key=${keyf}
+	fi
+	read -s -e -p "Provide the encryption key for $dir: " secret
+
+	echo "${secret}" | /usr/sbin/e4crypt add_key -S ${key} ${dir}
+	[ $? -ne 0 ] && return 1
+	DECRYPTED+=("$(realpath $dir)/")
+}
+
+already_opened() {
+	dir="$1/"
+	for item in ${DECRYPTED[@]}; do
+		echo "$(realpath -q $dir)/" | grep -q "$item" && return 0
+	done
+	return 1
+}
+
+create_key() {
+	[ -z "${1}" ] && echo 0x$(head -c 16 /dev/urandom | xxd -p) || echo 0x$(head -c 16 /dev/urandom | xxd -p) > "${1}"
+}
+
+encrypt() {
+	dir=$1
+	keyf=$2
+	program=$3
+
+	keyf=$(awk -F '[[:space:]]' -vdir=${dir} '$1 == dir {print $2}' ${ETAB})
+
+	if [ -z "${keyf}" ]; then
+		read -e -p "Provide salt file name (to be created) or leave it empty for plain key: " keyf
+		[ -n "${keyf}" ] && prefix="f:" || prefix=""
+		keyf=$($program create-salt $keyf)
+		[ $? -ne 0 ] && return 1
+	fi
+	[ -n "${prefix}" ] && key=$(cat ${keyf}) || key=${keyf}
+	[ $? -ne 0 ] && return 1
+	/usr/sbin/e4crypt add_key -S $key $dir
+	[ $? -ne 0 ] && return 1
+	echo -e "${dir}\t${prefix}${keyf}" >> ${ETAB}
+	if [ $? -ne 0 ]; then
+		echo "*** WARNING: Directory was encrypted, but path and keyfile where not stored in $ETAB ***"
+		return 1
+	fi
+}
+
+case $1 in
+	open|start)
+		if [ -n "${2}" ]; then
+			decrypt $(realpath ${2}) ${3}
+		else
+			[ ! -f "${ETAB}" ] && { echo "No encryption tab found"; exit 1; }
+			exec 6< ${ETAB}
+
+			while read -u6 directory salt; do
+				already_opened $directory || decrypt $(realpath ${directory}) ${salt}
+			done
+			exec 6<&-
+		fi
+	;;
+	encrypt)
+		encrypt ${2} ${3} ${0}
+	;;
+	create-salt)
+		create_key ${2}
+	;;
+	*)
+	;;
+esac
+

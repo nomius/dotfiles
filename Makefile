@@ -1,10 +1,20 @@
 .PHONY: all
-all: bin dotfiles bash local urxvt openbox tint2 config_files
+all: bin dotfiles bash local urxvt openbox tint2 config_files init
 
 .PHONY: bin
 bin:
 	mkdir -p $(HOME)/.bin
 	for x in $(shell find bin -type f); do ln -sf $(CURDIR)/$$x $(HOME)/.bin/$$(basename $$x); done
+
+.PHONY: init
+init:
+	if [ -d /etc/rc.d ]; then
+		sudo install -m 0755 init/encryption /etc/rc.d/encryption
+	elif [ -d /etc/init.d ]; then
+		sudo install -m 0755 init/encryption /etc/init.d/encryption
+	else
+		echo "/etc/rc.d or /etc/init.d not found"
+	fi
 
 .PHONY: dotfiles
 dotfiles:
