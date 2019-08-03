@@ -12,5 +12,5 @@ export PATH=$HOME/.bin:$PATH
 export PATH=$PATH:~/.local/bin
 export EDITOR=vim
 export MANPAGER="less -X";
-
+export LC_ALL=en_US
 
