@@ -1,13 +1,13 @@
 .PHONY: all
-all: bin dotfiles bash local urxvt openbox tint2 config_files init
+all: bin dotfiles bash local urxvt openbox tint2 config_files
 
 .PHONY: bin
 bin:
 	mkdir -p $(HOME)/.bin
 	for x in $(shell find bin -type f); do ln -sf $(CURDIR)/$$x $(HOME)/.bin/$$(basename $$x); done
 
-.PHONY: init
-init:
+.PHONY: global
+global:
 	if [ -d /etc/rc.d ]; then
 		sudo install -m 0755 init/encryption /etc/rc.d/encryption
 	elif [ -d /etc/init.d ]; then
@@ -15,6 +15,8 @@ init:
 	else
 		echo "/etc/rc.d or /etc/init.d not found"
 	fi
+	sudo install -m 0644 personal.map.gz /usr/share/kbd/keymaps/i386/qwerty/personal.map.gz
+	sudo install -m 0644 remap-keys.inc	/usr/share/kbd/keymaps/i386/include/remap-keys.inc
 
 .PHONY: dotfiles
 dotfiles:
