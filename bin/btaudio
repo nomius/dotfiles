@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+. ~/.profile.d/06-custom.sh
+
+if ! pidof bluetoothd; then
+	sudo /etc/rc.d/bluetoothd start
+	sleep 3
+fi
+
+cat << EOF | bluetoothctl
+default-agent
+power on
+pair $AUDIO_BT_DEVICE
+connect $AUDIO_BT_DEVICE
+quit
+EOF
+
