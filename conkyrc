@@ -11,9 +11,8 @@ own_window_transparent yes
 own_window_class override
 own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
 double_buffer yes
-minimum_size 1024 4
-#minimum_size 235
-maximum_width 235
+minimum_size 1024 260
+maximum_width 255
 draw_shades yes
 draw_outline no
 draw_borders no
