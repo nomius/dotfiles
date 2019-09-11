@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+if test -t 1; then
+    # see if it supports colors
+    ncolors=$(tput colors)
+    if test -n "$ncolors" && test $ncolors -ge 8; then
+        bold="$(tput bold)"
+        underline="$(tput smul)"
+        standout="$(tput smso)"
+        normal="$(tput sgr0)"
+        black="$(tput setaf 0)"
+        red="$(tput setaf 1)"
+        green="$(tput setaf 2)"
+        yellow="$(tput setaf 3)"
+        blue="$(tput setaf 4)"
+        magenta="$(tput setaf 5)"
+        cyan="$(tput setaf 6)"
+        white="$(tput setaf 7)"
+    fi
+fi
+
+cat - | sed $1 \
+	-e "s/\b\(NAME\)/\n${underline}\1${normal}/g" \
+	-e "s/\b\(READY\)/${underline}\1${normal}/g" \
+	-e "s/\b\(STATUS\)/${underline}\1${normal}/g" \
+	-e "s/\b\(RESTARTS\)/${underline}\1${normal}/g" \
+	-e "s/\b\(AGE\)/${underline}\1${normal}/g" \
+	-e "s/\b\(MODE\)/${underline}\1${normal}/g" \
+	-e "s/\b\(NOMINATED MODE\)/${underline}\1${normal}/g" \
+	-e "s/\b\(READINESS GATES\)/${underline}\1${normal}/g" \
+	-e "s/\b\(TYPE\)/${underline}\1${normal}/g" \
+	-e "s/\b\(CLUSTER\-IP\)/${underline}\1${normal}/g" \
+	-e "s/\b\(EXTERNAL\-IP\)/${underline}\1${normal}/g" \
+	-e "s/\b\(IP\)/${underline}\1${normal}/g" \
+	-e "s/\b\(PORT(S)\)/${underline}\1${normal}/g" \
+	-e "s/\b\(SELECTOR\)/${underline}\1${normal}/g" \
+	-e "s/\b\(UP\-TO\-DATE\)/${underline}\1${normal}/g" \
+	-e "s/\b\(AVAILABLE\)/${underline}\1${normal}/g" \
+	-e "s/\b\(CONTAINERS\)/${underline}\1${normal}/g" \
+	-e "s/\b\(IMAGES\)/${underline}\1${normal}/g" \
+	-e "s/\b\(DESIRED\)/${underline}\1${normal}/g" \
+	-e "s/\b\(CURRENT\)/${underline}\1${normal}/g" \
+	-e "s/\bReady/${green}Running${normal}/g" \
+	-e "s/\bRunning/${green}Running${normal}/g" \
+	-e "s/\bPending/${yellow}Pending${normal}/g" \
+	-e "s/\bCompleted/${blue}Completed${normal}/g" \
+	-e "s/\bError/${red}Error${normal}/g" \
+	-e "s/\bNotReady/${red}Error${normal}/g" \
+	-e "s/\bCrashLoopBackOff/${red}CrashLoopBackOff${normal}/g" \
+	-e "s%\(^[a-z][A-Za-z0-9/\.\-]*[[:space:]]\)%${cyan}\1${normal}%g" \
+	-e "s%\b\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\) %${blue}\1 ${normal}%g" \
+	-e "s%\([[:space:]][0-9]\+/[0-9]\+[[:space:]]\)%${bold}\1${normal}%g" \
+	-e "s%\([[:space:]][1-9]\+[[:space:]]\)%${bold}\1${normal}%g" \
+	-e "s%\([[:space:]][0-9]\+h[[:space:]]\|[[:space:]][0-9]\+m[[:space:]]\|[[:space:]][0-9]\+s[[:space:]]\|[[:space:]][0-9]\+d[[:space:]]\)%${bold}\1${normal}%g" \
+	-e "s%\([[:space:]][0-9]\+h[0-9]\+m\)%${bold}\1${normal}%g" \
+	-e "s%\([[:space:]][0-9]\+/TCP\|[[:space:]][0-9]\+/UDP[[:space:]]\)%${bold}\1${normal}%g" \
+	-e "s%\([[:space:]][0-9]\+:[0-9]\+/TCP\|[[:space:]][0-9]\+:[0-9]\+/UDP[[:space:]]\)%${bold}\1${normal}%g" \
+	-e "s%\(ClusterIP\|NodePort\|LoadBalancer\|ExternalName\)%${magenta}\1${normal}%g" \
+	-e "s%\(^[A-Z]\|^[[:space:]]\)\([a-zA-Z0-9 ]*:[[:space:]]*\)\(.*\)%${cyan}\1\2${bold}\3${normal}%g" \
+	-e "s/\b\<none\>/${yellow}none${normal}/g"
+
+# Line per line matching:
+# All headers
+# Ready
+# Running
+# Pending
+# Completed
+# Error
+# NotReady
+# CrashLoopBackOff
+# get <item> <-- get all is also supported, which is why we also support / as character
+# dumb ip address
+# number/number
+# number
+# number with days, hours, minutes and seconds
+# port/TCP and port/UDP
+# port:port/TCP port:port/UDP
+# ClusterIP, NodePort, LoadBalancer, ExternalName
+# describe output <-- This is why we match with Upercase or [[:space:]]Upercase
+# <none>
