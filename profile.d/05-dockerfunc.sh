@@ -369,7 +369,7 @@ dpulseaudio(){
 
 dpavucontrol() {
 	del_stopped pavucontrol
-	relies_on pulseaudio
+	#relies_on pulseaudio
 
 	docker run --rm \
 		--device /dev/snd \
@@ -377,12 +377,13 @@ dpavucontrol() {
 		-v /etc/localtime:/etc/localtime:ro \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
-		--link pulseaudio:pulseaudio \
 		-e DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS \
-		-e PULSE_SERVER=pulseaudio \
 		--group-add audio \
+		--group-add pulse \
 		--name pavucontrol \
 		nomius/pavucontrol
+		#-e PULSE_SERVER=pulseaudio \
+		#--link pulseaudio:pulseaudio \
 }
 
 dremmina(){
