@@ -1,4 +1,4 @@
-! Basics
+!! Basics
 URxvt.title: Terminal
 URxvt.scrollBar: false
 URxvt.depth: 32
@@ -25,3 +25,23 @@ URxvt.keysym.C-S-Up:   font-size:incglobal
 URxvt.keysym.C-S-Down: font-size:decglobal
 URxvt.keysym.C-equal:  font-size:reset
 URxvt.keysym.C-slash:  font-size:show
+
+URxvt.font: xft:Source Code Pro for Powerline:style=Regular:size=11
+URxvt.boldFont: xft:Source Code Pro for Powerline:style=Bold:size=11
+URxvt.italicFont: xft:Source Code Pro for Powerline:style=Italic:size=11
+URxvt.boldItalicFont: xft:Source Code Pro for Powerline:style=Black Italic:size=11
+URxvt.insecure: true
+
+
+URxvt*letterSpace: 0
+
+Xft.dpi:        96
+Xft.antialias:  true
+Xft.rgba:       rgb
+Xft.hinting:    true
+Xft.hintstyle:  hintslight
+Xft.autohint:   false
+Xft.lcdfilter:  lcddefault
+
+Xterm*none:        on
+

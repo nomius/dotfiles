@@ -95,7 +95,7 @@ execp_background_id = 2
 execp_interval = 3
 execp_markup = 1
 execp_centered = 1
-execp_font = Liberation Mono 9
+execp_font = Source Code Pro for Powerline 9
 execp_padding = 0 0
 
 # Battery
