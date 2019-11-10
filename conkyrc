@@ -1,5 +1,5 @@
 background no
-font Sans:size=7
+font Sans:size=9
 #xftfont Sans:size=10
 use_xft yes
 xftalpha 0.9
@@ -12,7 +12,7 @@ own_window_class override
 own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
 double_buffer yes
 minimum_size 1024 260
-maximum_width 255
+maximum_width 355
 draw_shades yes
 draw_outline no
 draw_borders no
@@ -36,11 +36,11 @@ Hostname: $alignr$nodename
 Kernel: $alignr$kernel
 Uptime: $alignr$uptime
 
-CPU: ${alignr}${hwmon 1 temp 1}C  (Fan: ${hwmon 1 fan 1} RPM)
-Ambient: ${alignr}${hwmon 1 temp 2}C
-Memory: ${alignr}${hwmon 1 temp 3}C
-Motherboard: ${alignr}${hwmon 0 temp 2}C
-Wifi: ${alignr}${hwmon 1 temp 1}C
+CPU: ${alignr}${hwmon 3 temp 1}C  (Fan: ${hwmon 3 fan 1} RPM)
+Motherboard: ${alignr}${hwmon 4 temp 1}C
+Memory: ${alignr}${hwmon 3 temp 3}C
+Ambient: ${alignr}${hwmon 3 temp 2}C
+Wifi: ${alignr}${hwmon 5 temp 1}C
 
 
 Processes: ${alignr}$processes ($running_processes running)
@@ -73,7 +73,8 @@ ${color white}Filesystem ${hr 1}${color}
 Root: ${alignr}${fs_free /} / ${fs_size /}
 ${fs_bar 4 /}
 
-${color white}NETWORK (${wireless_essid wlp2s0} - ${addr wlp2s0}) ${hr 1}${color}
+${color white}NETWORK: ${alignr}${wireless_essid wlp2s0}
+${color white}IP Address: ${alignr}${addr wlp2s0}
 
 Down ${downspeed wlp2s0} ${alignr}Up ${upspeed wlp2s0}
 ${downspeedgraph wlp2s0 25,107} ${alignr}${upspeedgraph wlp2s0 25,107}
