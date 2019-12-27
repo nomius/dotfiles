@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-sleep 0.2
-[ "$1" = "Caps" ] && notify-send "Notification: Caps lock $(xset q | awk '/Caps/ {print $4}')..."
-[ "$1" = "Num" ] && notify-send "Notification: Numeric pad $(xset q | awk '/Num/ {print $8}')..."
+sleep 0.1
+[ "$1" = "Caps" ] && notify-send "Notification: Caps lock $(test $(cat '/sys/class/leds/input5::capslock/brightness') -eq 1 && echo enabled || echo disabled)..."
+[ "$1" = "Num" ] && notify-send "Notification: Numeric pad $(test $(cat '/sys/class/leds/input5::numlock/brightness') -eq 1 && echo enabled || echo disabled)..."
