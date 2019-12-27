@@ -7,6 +7,9 @@ if ! pidof bluetoothd; then
 	sleep 3
 fi
 
+#pulseaudio -k
+#sleep 3
+
 cat << EOF | bluetoothctl
 default-agent
 power on
