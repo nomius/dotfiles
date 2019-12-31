@@ -1,0 +1,55 @@
+#!/bin/bash
+
+log() {
+	case ${1} in
+		error|errore)
+			[ $1 == "errore" ] && out=exit || out=:
+			shift 1
+			tput setaf 9; echo $*; tput sgr0
+			$out 1
+		;;
+		warning|warninge)
+			[ $1 == "warninge" ] && out=exit || out=:
+			shift 1
+			tput setaf 14; echo $*; tput sgr0
+			$out 1
+		;;
+		ok)
+			shift 1
+			tput setaf 10; echo $*;	tput sgr0
+		;;
+		msg|msge)
+			[ $1 == "msge" ] && out=exit || out=:
+			shift 1
+			echo $*
+			$out 1
+		;;
+	esac
+}
+
+randomizer() {
+	for i in $(seq 0 5); do
+		eval "octet${i}=$(echo -e "obase=16;$(($RANDOM % 255))" | bc)"
+	done
+	echo "${octet0}:${octet1}:${octet2}:${octet3}:${octet4}:${octet5}"
+}
+
+ACTION=${1}
+DEV=${2}
+if [ "${ACTION}" = "spoof" ]; then
+	new_mac=$(randomizer)
+	ip link set dev ${DEV} down || log errore "Can't bring interface ${DEV} down. MAC address wasn't spoofed. Link is up."
+	ip link set dev ${DEV} address ${new_mac} || log errore "Can't spoof MAC address for interface ${DEV}. MAC address wasn't spoofed. Link is down."
+	[[ $(ip link show dev ${DEV} | awk '/link\/ether/ {print toupper($2)}') == "${ORIGNIAL_MAC_ADDR}" ]] && log errore "MAC address couldn't be spoofed for interface ${DEV}. Link is down."
+
+	ip link set dev ${DEV} up && log ok "MAC address spoofed to ${new_mac} in interface ${DEV}. Link is up." || log warninge "MAC address spoofed, but interface ${DEV} couldn't be brought up. Link is down."
+elif [ "${ACTION}" = "restore" ]; then
+	ip link set dev ${DEV} down || log errore "Can't bring interface ${DEV} down. MAC address wasn't restored. Link is up."
+	ip link set dev ${DEV} address ${ORIGNIAL_MAC_ADDR} || log errore "Can't restore MAC address for interface ${DEV}. MAC address wasn't restored. Link is down."
+	[[ $(ip link show dev ${DEV} | awk '/link\/ether/ {print toupper($2)}') != "${ORIGNIAL_MAC_ADDR}" ]] && log errore "MAC address couldn't be restored for interface ${DEV}. Link is down."
+
+	ip link set dev ${DEV} up && log ok "MAC address restored in interface ${DEV}. Link is up." || log warninge "MAC address restored, but interface ${DEV} couldn't be brought up. Link is down"
+else
+	log msge "${0} <spoof/restore> <net device>"
+fi
+
