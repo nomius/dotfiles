@@ -4,15 +4,16 @@
 
 # ID 1
 rounded = 0
-border_width = 1
-background_color = #777777 80
-border_color = #21272f 100
+border_width = 0
+background_color = #000000 60
+border_color = #000000 0
+disable_transparency = 0
 
 # ID 2
 rounded = 0
 border_width = 0
-background_color = #21272f 80
-border_color = #21272f 100
+background_color = #000000 30
+border_color = #000000 0
 
 # Panel
 panel_monitor = all
@@ -23,7 +24,7 @@ panel_padding = 0 0 0
 panel_dock = 0
 wm_menu = 1
 panel_layer = normal
-panel_background_id = 1
+panel_background_id = 2
 panel_items = TESBC
 
 # Panel Autohide
@@ -47,7 +48,7 @@ task_centered = 0
 task_maximum_size = 200 32
 task_padding = 10 4
 task_background_id = 0
-task_active_background_id = 2
+task_active_background_id = 1
 task_urgent_background_id = 0
 task_iconified_background_id = 0
 
@@ -91,7 +92,7 @@ mouse_scroll_down = iconify
 # Execp 1 : print disk usage for the root partition
 execp = new
 execp_command = sudo tint2_stats.py
-execp_background_id = 2
+execp_background_id = 0
 execp_interval = 3
 execp_markup = 1
 execp_centered = 1
@@ -108,7 +109,7 @@ bat1_font = Liberation Mono 8
 bat2_font = Liberation Mono 6
 battery_font_color = #FFFFFF 100
 battery_padding = 1 0
-battery_background_id = 2
+battery_background_id = 0
 
 # Clock
 time1_format = %H:%M
@@ -118,8 +119,8 @@ time2_font = Droid Sans 8
 clock_font_color = #FFFFFF 100
 clock_tooltip =
 clock_padding = 10 6
-clock_background_id = 2
+clock_background_id = 0
 time1_timezone =
 time2_timezone =
-clock_tooltip_timezone =
+clock_tooltip_timezone = GMT-3
 
