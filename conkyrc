@@ -26,10 +26,38 @@ gap_y 35
 no_buffers yes
 uppercase no
 cpu_avg_samples 2
-override_utf8_locale no
+override_utf8_locale yes
 uppercase yes # set to yes if you want all text to be in uppercase
 
 TEXT
+# Weather starts here
+${execi 300 weather.py update}
+
+${goto 36}${voffset -35}${font Sans:size=36}${color white}${execi 300 weather.py get weather main temp}°C${font}${color}
+${goto 36}${voffset 10}${font Sans:size=11}${color white}${execi 300 weather.py get weather weather 0 description}${font}${color}
+
+${color white}${alignr 52}${voffset -84}${execi 300 weather.py get weather main pressure} hPa${color}
+${color white}${alignr 52}${voffset 9}${execi 300 weather.py get weather main humidity} %${color}
+${color white}${alignr 52}${voffset 9}${execi 300 weather.py get weather wind speed} m/s${color}
+
+
+${color3}${voffset -13}${alignc 77}${execi 300 weather.py get forecast forecast 0 day}${color}
+${color3}${voffset -15}${alignc}${execi 300 weather.py get forecast forecast 1 day}${color}
+${color3}${voffset -15}${alignc -77}${execi 300 weather.py get forecast forecast 2 day}${color}
+
+${color white}${voffset 31} ${alignc 77}${execi 300 weather.py get forecast forecast 0 min}°C/${execi 300 weather.py get forecast forecast 0 max}°C${color}
+${color white}${voffset -15}${alignc}${execi 300 weather.py get forecast forecast 1 min}°C/${execi 300 weather.py get forecast forecast 1 max}°C${color}
+${color white}${voffset -15}${alignc -77}${execi 300 weather.py get forecast forecast 2 min}C°/${execi 300 weather.py get forecast forecast 2 max}°C${color}
+
+${image ~/.local/pixmaps/weather/pressure.png -p 306,2 -s 16x16}
+${image ~/.local/pixmaps/weather/humidity.png -p 306,26 -s 16x16}
+${image ~/.local/pixmaps/weather/wind-2.png -p 306,50 -s 16x16}
+${execi 300 cp -f ~/.local/pixmaps/weather/forecast_icons/$(weather.py get forecast forecast 0 icon).png ~/.cache/weather/weather-1.png}${image ~/.cache/weather/weather-1.png -p 82,103 -s 32x32}
+${execi 300 cp -f ~/.local/pixmaps/weather/forecast_icons/$(weather.py get forecast forecast 0 icon).png ~/.cache/weather/weather-2.png}${image ~/.cache/weather/weather-2.png -p 161,103 -s 32x32}
+${execi 300 cp -f ~/.local/pixmaps/weather/forecast_icons/$(weather.py get forecast forecast 0 icon).png ~/.cache/weather/weather-3.png}${image ~/.cache/weather/weather-3.png -p 237,103 -s 32x32}${font}${voffset -120}
+# Weather ends here
+
+
 ${color white}SYSTEM ${hr 1}${color}
 
 Hostname: $alignr$nodename
@@ -84,16 +112,7 @@ Connections ${alignr} Remote Service/Port
  ${tcp_portmon 1 32768 rip 0} ${alignr} ${tcp_portmon 1 32768 lservice 0}
  ${tcp_portmon 1 32768 rip 1} ${alignr} ${tcp_portmon 1 32768 lservice 1}
  ${tcp_portmon 1 32768 rip 2} ${alignr} ${tcp_portmon 1 32768 lservice 2}
- ${tcp_portmon 1 32768 rip 3} ${alignr} ${tcp_portmon 1 32768 lservice 3}
  ${color red}${tcp_portmon 1 32767 rip 0} ${alignr} ${tcp_portmon 1 32767 lservice 0}
  ${color red}${tcp_portmon 1 32767 rip 1} ${alignr} ${tcp_portmon 1 32767 lservice 1}
  ${color red}${tcp_portmon 1 32767 rip 2} ${alignr} ${tcp_portmon 1 32767 lservice 2}
- ${color red}${tcp_portmon 1 32767 rip 3} ${alignr} ${tcp_portmon 1 32767 lservice 3}
 
-#${color white}WEATHER ${hr 1}${color}
-
-#${texeci 600 weather.sh}
-
-#${color white}FQDN ${hr 1}${color}
-
-##${texeci 300 /usr/sbin/updateurl.sh}
