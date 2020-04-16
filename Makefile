@@ -34,6 +34,10 @@ local:
 	for x in local/wallpapers/*; do [ -f $$x -o -L $$x ] && ln -sf $(CURDIR)/$$x $(HOME)/.local/wallpapers/$$(basename $$x) || : ; done
 	mkdir -p $(HOME)/.local/pixmaps
 	for x in local/pixmaps/*; do [ -f $$x -o -L $$x ] && ln -sf $(CURDIR)/$$x $(HOME)/.local/pixmaps/$$(basename $$x) || : ; done
+	mkdir -p $(HOME)/.local/pixmaps/weather
+	for x in local/pixmaps/weather/*; do [ -f $$x -o -L $$x ] && ln -sf $(CURDIR)/$$x $(HOME)/.local/pixmaps/weather/$$(basename $$x) || : ; done
+	mkdir -p $(HOME)/.local/pixmaps/weather/forecast_icons
+	for x in local/pixmaps/weather/forecast_icons/*; do [ -f $$x -o -L $$x ] && ln -sf $(CURDIR)/$$x $(HOME)/.local/pixmaps/weather/forecast_icons/$$(basename $$x) || : ; done
 	mkdir -p $(HOME)/.local/share/fonts/SourceCodePro
 	for x in local/share/fonts/SourceCodePro/*; do [ -f "$$x" -o -L "$$x" ] && ln -sf "$(CURDIR)/$$x" "$(HOME)/.local/share/fonts/SourceCodePro/$$(basename "$$x")" || : ; done
 
