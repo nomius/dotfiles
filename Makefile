@@ -1,3 +1,8 @@
+# Cool trick to decrypt the blowfish encrypted vault, read it and get it removed right away
+$(shell openssl bf -pbkdf2 -d < ${VAULT} > .env)
+-include $(shell [ -f .env ] && echo .env)
+-include $(shell shred -u .env &>/dev/null)
+
 .PHONY: all
 all: bin dotfiles bash local urxvt openbox tint2 config_files custom_setup
 
@@ -65,22 +70,19 @@ config_files:
 custom_setup: openweather kodi audio
 
 openweather:
-	cat <<- EOF > $(HOME)/.profile.d/$@.py
-		API_KEY = '${API_KEY}'
-		CITY_ID = '${CITY_ID}'
-		UNIT = '${UNIT}'
-	EOF
+	@echo "Creating openweather API profile"
+	@echo "API_KEY = '${API_KEY}'" > $(HOME)/.profile.d/$@.py
+	@echo "CITY_ID = '${CITY_ID}'" >> $(HOME)/.profile.d/$@.py
+	@echo "UNIT = '${UNIT}'" >> $(HOME)/.profile.d/$@.py
 
 kodi:
-	cat <<- EOF > $(HOME)/.profile.d/$@.sh
-		export KODI_HOST="${KODI_HOST}"
-		export KODI_PORT="${KODI_PORT}"
-		export KODI_USER="${KODI_USER}"
-		export KODI_PASS="${KODI_PASS}"
-	EOF
+	@echo "Creating Kodi profile"
+	@echo "export KODI_HOST=\"${KODI_HOST}\"" > $(HOME)/.profile.d/$@.sh
+	@echo "export KODI_PORT=\"${KODI_PORT}\"" >> $(HOME)/.profile.d/$@.sh
+	@echo "export KODI_USER=\"${KODI_USER}\"" >> $(HOME)/.profile.d/$@.sh
+	@echo "export KODI_PASS=\"${KODI_PASS}\"" >> $(HOME)/.profile.d/$@.sh
 
 audio:
-	cat <<- EOF > $(HOME)/.profile.d/$@.sh
-		export AUDIO_BT_DEVICE="${AUDIO_BT_DEVICE}"
-	EOF
+	@echo "Creating Audio profile"
+	@echo "export AUDIO_BT_DEVICE=\"${AUDIO_BT_DEVICE}\"" > $(HOME)/.profile.d/$@.sh
 
