@@ -24,3 +24,7 @@ alias ips="sudo /sbin/ifconfig -a | grep -o 'inet6\\? \\(addr:\\)\\?\\s\\?\\(\\(
 alias pubip="dig +short myip.opendns.com @resolver1.opendns.com"
 
 alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'
+
+# ssh to hosts
+alias ctrlc='ssh -t ctrl-c.club "tmux a || tmux"'
+alias europa='ssh europa.fapyd.unr.edu.ar'
