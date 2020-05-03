@@ -8,7 +8,7 @@ import urllib.request
 import urllib.parse
 import importlib.util
 
-spec = importlib.util.spec_from_file_location("weather config", os.environ['HOME'] + '/.profile.d/custom.py')
+spec = importlib.util.spec_from_file_location("weather config", os.environ['HOME'] + '/.profile.d/openweather.py')
 config = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(config)
 
