@@ -1,5 +1,5 @@
 .PHONY: all
-all: bin dotfiles bash local urxvt openbox tint2 config_files
+all: bin dotfiles bash local urxvt openbox tint2 config_files custom_setup
 
 .PHONY: bin
 bin:
@@ -60,4 +60,27 @@ tint2:
 config_files:
 	mkdir -p $(HOME)/.config
 	for x in config/*; do [ -f $$x ] && ln -sf $(CURDIR)/$$x $(HOME)/.config/$$(basename $$x) || : ; done
+
+.PHONY: custom
+custom_setup: openweather kodi audio
+
+openweather:
+	cat <<- EOF > $(HOME)/.profile.d/$@.py
+		API_KEY = '${API_KEY}'
+		CITY_ID = '${CITY_ID}'
+		UNIT = '${UNIT}'
+	EOF
+
+kodi:
+	cat <<- EOF > $(HOME)/.profile.d/$@.sh
+		export KODI_HOST="${KODI_HOST}"
+		export KODI_PORT="${KODI_PORT}"
+		export KODI_USER="${KODI_USER}"
+		export KODI_PASS="${KODI_PASS}"
+	EOF
+
+audio:
+	cat <<- EOF > $(HOME)/.profile.d/$@.sh
+		export AUDIO_BT_DEVICE="${AUDIO_BT_DEVICE}"
+	EOF
 
