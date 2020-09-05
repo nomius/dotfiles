@@ -32,7 +32,6 @@ URxvt.italicFont: xft:Source Code Pro for Powerline:style=Italic:size=11
 URxvt.boldItalicFont: xft:Source Code Pro for Powerline:style=Black Italic:size=11
 URxvt.insecure: true
 
-
 URxvt*letterSpace: 0
 
 Xft.dpi:        96
@@ -43,5 +42,12 @@ Xft.hintstyle:  hintslight
 Xft.autohint:   false
 Xft.lcdfilter:  lcddefault
 
-Xterm*none:        on
+xterm*none:        on
+xterm*loginShell: true
+xterm*foreground: white
+xterm*background: black
+
+#xterm.vt100.translations: #override \n\
+#  Ctrl <Key>Down: smaller-vt-font() \n\
+#  Ctrl <Key>Up:   larger-vt-font()
 
