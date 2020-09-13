@@ -353,6 +353,14 @@
       <command>kwort-mixer open-mixer</command>
     </action>
   </keybind>
+  <keybind key="C-A-r">
+    <action name="Execute">
+      <startupnotify>
+        <enabled>false</enabled>
+      </startupnotify>
+      <command>killall -SIGUSR1 conky</command>
+    </action>
+  </keybind>
   <keybind key="Pointer_Button3">
     <action name="Execute">
       <command>xdotool click 3</command>
