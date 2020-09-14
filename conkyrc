@@ -13,6 +13,32 @@ function findInterface()
     return ""
 end
 
+-- You might want to modify this function
+function customSensors()
+    local f = io.open('/proc/cpuinfo', "r")
+	
+	for line in f:lines() do
+    	if string.match(line, "model name") and string.match(line, "Phenom") then
+			f:close()	
+			return [[
+
+CPU: ${alignr}${hwmon 0 temp 1}C  (Fan: ${hwmon 0 fan 1} RPM)
+Motherboard: ${alignr}${hwmon 0 temp 2}C
+			]]
+		end
+    	if string.match(line, "model name") and string.match(line, "Intel(R)") then
+			f:close()
+			return [[
+CPU: ${alignr}${hwmon 3 temp 1}C  (Fan: ${hwmon 3 fan 1} RPM)
+Motherboard: ${alignr}${hwmon 4 temp 1}C
+Memory: ${alignr}${hwmon 3 temp 3}C
+Ambient: ${alignr}${hwmon 3 temp 2}C
+Wifi: ${alignr}${hwmon 5 temp 1}C
+]]
+		end
+	end
+end
+
 conky.config = {
 	background = false,
 	font = 'Sans:size=9',
@@ -80,13 +106,11 @@ ${color white}SYSTEM ${hr 1}${color}
 Hostname: $alignr$nodename
 Kernel: $alignr$kernel
 Uptime: $alignr$uptime
-
-CPU: ${alignr}${hwmon 3 temp 1}C  (Fan: ${hwmon 3 fan 1} RPM)
-Motherboard: ${alignr}${hwmon 4 temp 1}C
-Memory: ${alignr}${hwmon 3 temp 3}C
-Ambient: ${alignr}${hwmon 3 temp 2}C
-Wifi: ${alignr}${hwmon 5 temp 1}C
-
+]]
+..
+customSensors()
+..
+[[
 
 Processes: ${alignr}$processes ($running_processes running)
 Load: ${alignr}$loadavg
