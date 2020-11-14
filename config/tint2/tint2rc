@@ -91,7 +91,7 @@ mouse_scroll_down = iconify
 
 # Execp 1 : print disk usage for the root partition
 execp = new
-execp_command = sudo tint2_stats.py
+execp_command = sudo /usr/bin/tint2_stats.py
 execp_background_id = 0
 execp_interval = 3
 execp_markup = 1
