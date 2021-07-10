@@ -461,7 +461,7 @@ dtermboy(){
 }
 dterraform(){
 	docker run -it --rm \
-		-v "${HOME}:${HOME}:ro" \
+		-v "${HOME}:${HOME}:rw" \
 		-v "$(pwd):/usr/src/repo" \
 		-v /tmp:/tmp \
 		--workdir /usr/src/repo \
