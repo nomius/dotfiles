@@ -13,10 +13,10 @@ config = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(config)
 
 api_prefix = 'https://api.openweathermap.org/data/2.5/'
-api_key = config.API_KEY
-city_id = config.CITY_ID
+api_key = config.WEATHER_API_KEY
+city_id = config.WEATHER_CITY_ID
 try:
-    unit = config.UNIT
+    unit = config.WEATHER_UNIT
 except:
     unit = 'metric'
 try:
