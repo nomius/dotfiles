@@ -10,7 +10,7 @@ if [ -f "$userresources" ]; then
 fi
 
 if [ -f "$usermodmap" ]; then
-	setxkbmap -option "terminate:ctrl_alt_bksp"
+	setxkbmap -option "terminate:ctrl_alt_bksp" es
     xmodmap "$usermodmap"
 fi
 
