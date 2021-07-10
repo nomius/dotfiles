@@ -238,12 +238,25 @@
   <keybind key="W-d">
     <action name="ToggleShowDesktop"/>
   </keybind>
+  <keybind key="C-S-A-Right">
+    <action name="MoveResizeTo">
+      <monitor>2</monitor>
+    </action>
+  </keybind>
+  <keybind key="C-S-A-Left">
+    <action name="MoveResizeTo">
+      <monitor>1</monitor>
+    </action>
+  </keybind>
 
   <!-- Keybindings for windows -->
   <keybind key="A-F4">
     <action name="Close"/>
   </keybind>
   <keybind key="A-F12">
+    <action name="ToggleMaximize"/>
+  </keybind>
+  <keybind key="C-S-Up">
     <action name="ToggleMaximize"/>
   </keybind>
   <keybind key="A-F11">
