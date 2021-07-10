@@ -20,18 +20,28 @@ decrypt() {
 	if [ -z "${keyf}" ]; then
 		keyf=$(awk -F '[[:space:]]' -vdir=${dir} '$1 == dir {print $2}' ${ETAB})
 		[ $? -ne 0 ] && return 1
-	fi
-	if [ "${keyf:0:2}" = "f:" ]; then
-		key=$(cat ${keyf:2})
-		[ $? -ne 0 ] && return 1
+		if [ -f "${keyf}" ]; then
+			key=$(cat ${keyf})
+			[ $? -ne 0 ] && return 1
+		else
+			echo "No salt file found"
+			return 1
+		fi
 	else
-		key=${keyf}
+		if [ -f "${keyf}" ]; then
+			key=$(cat ${keyf})
+			[ $? -ne 0 ] && return 1
+		else
+			echo "No salt file found"
+			return 1
+		fi
 	fi
 	read -s -e -p "Provide the encryption key for $dir: " secret
 
 	echo "${secret}" | /usr/sbin/e4crypt add_key -S ${key} ${dir}
 	[ $? -ne 0 ] && return 1
 	DECRYPTED+=("$(realpath $dir)/")
+	echo "decrypted" > $EFLAG
 }
 
 already_opened() {
@@ -43,7 +53,8 @@ already_opened() {
 }
 
 create_key() {
-	[ -z "${1}" ] && echo 0x$(head -c 16 /dev/urandom | xxd -p) || echo 0x$(head -c 16 /dev/urandom | xxd -p) > "${1}"
+	[ -z "${1}" ] && { echo "No salt file output provided"; exit 1; }
+	echo 0x$(head -c 16 /dev/urandom | xxd -p) > $1
 }
 
 encrypt() {
@@ -53,20 +64,42 @@ encrypt() {
 
 	keyf=$(awk -F '[[:space:]]' -vdir=${dir} '$1 == dir {print $2}' ${ETAB})
 
-	if [ -z "${keyf}" ]; then
-		read -e -p "Provide salt file name (to be created) or leave it empty for plain key: " keyf
-		[ -n "${keyf}" ] && prefix="f:" || prefix=""
-		keyf=$($program create-salt $keyf)
+	if [ -z "${keyf}" -o ! -f "${keyf}" ]; then
+		read -e -p "Provide salt file name (to be created): " keyf
+		$program create-salt $keyf
 		[ $? -ne 0 ] && return 1
 	fi
-	[ -n "${prefix}" ] && key=$(cat ${keyf}) || key=${keyf}
+	key=$(cat ${keyf})
 	[ $? -ne 0 ] && return 1
 	/usr/sbin/e4crypt add_key -S $key $dir
 	[ $? -ne 0 ] && return 1
-	echo -e "${dir}\t${prefix}${keyf}" >> ${ETAB}
+	echo -e "$dir\t$keyf" >> ${ETAB}
 	if [ $? -ne 0 ]; then
 		echo "*** WARNING: Directory was encrypted, but path and keyfile where not stored in $ETAB ***"
 		return 1
+	fi
+}
+
+check() {
+	dir=$1
+	EFLAG=$dir/.decrypted
+
+	[ ! -d "${dir}" ] && return 1
+
+	cat ${EFLAG} &>/dev/null
+	if [ $? -eq 0 ]; then
+		echo "decrypted" > $EFLAG
+		echo "Path is already decrypted"
+		return 0
+	else
+		keyf=$(awk -F '[[:space:]]' -vdir=${dir} '$1 == dir {print $2}' ${ETAB})
+		if [ -n "${keyf}" ]; then
+			echo "Path is encrypted"
+			return 1
+		else
+			echo "Path is not in the key tab"
+			return 0
+		fi
 	fi
 }
 
@@ -89,6 +122,10 @@ case $1 in
 	;;
 	create-salt)
 		create_key ${2}
+	;;
+	check)
+		[ -n "$2" ] && dir="${2}" || dir="${PWD}"
+		check $dir
 	;;
 	*)
 	;;
