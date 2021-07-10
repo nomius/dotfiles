@@ -13,6 +13,16 @@ function findInterface()
     return ""
 end
 
+
+function WirelessSid()
+	local interface = findInterface()
+	if interface:find("wl", 1, true) == 1 then
+		return "\n${color white}NETWORK: ${alignr}${wireless_essid" .. interface .. "}"
+	else
+		return "\n${color white}NETWORK: ${alignr}WIRED\n"
+	end
+end
+
 -- You might want to modify this function
 function customSensors()
     local f = io.open('/proc/cpuinfo', "r")
@@ -30,11 +40,10 @@ Motherboard: ${alignr}${hwmon 0 temp 2}C
 			f:close()
 			return [[
 
-CPU: ${alignr}${hwmon 3 temp 1}C  (Fan: ${hwmon 3 fan 1} RPM)
-Motherboard: ${alignr}${hwmon 4 temp 1}C
-Memory: ${alignr}${hwmon 3 temp 3}C
-Ambient: ${alignr}${hwmon 3 temp 2}C
-Wifi: ${alignr}${hwmon 5 temp 1}C
+CPU: ${alignr}${hwmon 4 temp 1}C  (Fan: ${hwmon 3 fan 1} RPM)
+Motherboard: ${alignr}${hwmon 1 temp 2}C
+Memory: ${alignr}${hwmon 1 temp 1}C
+Wifi: ${alignr}${hwmon 3 temp 1}C
 ]]
 		end
 	end
@@ -144,8 +153,11 @@ ${color white}Filesystem ${hr 1}${color}
 
 Root: ${alignr}${fs_free /} / ${fs_size /}
 ${fs_bar 4 /}
-
-${color white}NETWORK: ${alignr}${wireless_essid ]] .. findInterface() .. [[}
+]]
+..
+WirelessSid()
+..
+[[
 ${color white}IP Address: ${alignr}${addr ]] ..  findInterface() .. [[}
 
 Down ${downspeed ]] .. findInterface() .. [[} ${alignr}Up ${upspeed ]] .. findInterface() .. [[}
