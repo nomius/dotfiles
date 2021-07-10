@@ -79,6 +79,7 @@ set statusline+=%=                           " right align
 set statusline+=%2*0x%-8B\                   " current char
 set statusline+=%-14.(%l,%c%V%)\ %<%P        " offset
 hi StatusLine ctermbg=6 ctermfg=4
+set term=xterm-256color
 
 " Winmanager configuration
 if has("eval")
