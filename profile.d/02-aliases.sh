@@ -25,6 +25,9 @@ alias pubip="dig +short myip.opendns.com @resolver1.opendns.com"
 
 alias urlencode='python -c "import sys, urllib as ul; print ul.quote_plus(sys.argv[1]);"'
 
+alias snddisplay='xrandr -d :0 --output HDMI1 --right-of eDP1 --auto'
+alias snddisplay_off='xrandr -d :0 --output HDMI1 --off'
+
 # ssh to hosts
 alias ctrlc='ssh -t ctrl-c.club "tmux a || tmux"'
 alias europa='ssh europa.fapyd.unr.edu.ar'
