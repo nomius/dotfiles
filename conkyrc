@@ -17,7 +17,7 @@ end
 function WirelessSid()
 	local interface = findInterface()
 	if interface:find("wl", 1, true) == 1 then
-		return "\n${color white}NETWORK: ${alignr}${wireless_essid" .. interface .. "}"
+		return "\n${color white}NETWORK: ${alignr}${wireless_essid " .. interface .. "}\n"
 	else
 		return "\n${color white}NETWORK: ${alignr}WIRED\n"
 	end
