@@ -21,7 +21,7 @@ fi
 
 # Pulse first
 if which pulseaudio >/dev/null 2>&1; then
-	pulseaudio --start --exit-idle-time=-1 --log-target=syslog &
+	pulseaudio --exit-idle-time=-1 --log-target=syslog &
 else
 	# launch volumeicon if found
 	if which volumeicon >/dev/null 2>&1; then
