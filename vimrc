@@ -97,6 +97,7 @@ endif
 " Enable syntax highlighting
 if has("syntax")
 	syntax on
+	autocmd BufNewFile,BufRead *.tfvars set syntax=tf
 endif
 
 if has("gui")
