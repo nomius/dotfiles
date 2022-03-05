@@ -2,8 +2,6 @@
 
 [ -x /usr/bin/lesspipe ] && export LESSOPEN="|lesspipe %s"
 
-export VDPAU_DRIVER=va_gl
-export LIBVA_DRIVER_NAME=vdpau
 export PATH=$HOME/.bin:$PATH
 export PATH=$PATH:~/.local/bin
 export EDITOR=vim
