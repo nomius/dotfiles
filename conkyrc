@@ -40,10 +40,9 @@ Motherboard: ${alignr}${hwmon 0 temp 2}C
 			f:close()
 			return [[
 
-CPU: ${alignr}${hwmon 4 temp 1}C  (Fan: ${hwmon 3 fan 1} RPM)
-Motherboard: ${alignr}${hwmon 1 temp 2}C
-Memory: ${alignr}${hwmon 1 temp 1}C
-Wifi: ${alignr}${hwmon 3 temp 1}C
+CPU: ${alignr}${hwmon 5 temp 1}C  (Fan: ${hwmon 5 fan 1} RPM)
+NVMe: ${alignr}${hwmon 0 temp 1}C
+Motherboard: ${alignr}${hwmon 4 temp 1}C
 ]]
 		end
 	end
@@ -53,7 +52,7 @@ end
 
 conky.config = {
 	background = false,
-	font = 'Sans:size=9',
+	font = 'Sans:size=8',
 --xftfont Sans:size=10
 	use_xft = true,
 	xftalpha = 0.9,
@@ -91,7 +90,7 @@ ${execi 300 weather.py update}
 ${goto 36}${voffset -35}${font Sans:size=36}${color white}${execi 300 weather.py get weather main temp}°C${font}${color}
 ${goto 36}${voffset 10}${font Sans:size=11}${color white}${execi 300 weather.py get weather weather 0 description}${font}${color}
 
-${color white}${alignr 52}${voffset -84}${execi 300 weather.py get weather main pressure} hPa${color}
+${color white}${alignr 52}${voffset -91}${execi 300 weather.py get weather main pressure} hPa${color}
 ${color white}${alignr 52}${voffset 9}${execi 300 weather.py get weather main humidity} %${color}
 ${color white}${alignr 52}${voffset 9}${execi 300 weather.py get weather wind speed} m/s${color}
 
@@ -118,11 +117,11 @@ ${color white}SYSTEM ${hr 1}${color}
 Hostname: $alignr$nodename
 Kernel: $alignr$kernel
 Uptime: $alignr$uptime
-]]
-..
-customSensors()
-..
-[[
+
+CPU: ${alignr}${hwmon 6 temp 1}C  (Fan: ${hwmon 6 fan 1} RPM)
+NVMe: ${alignr}${hwmon 0 temp 1}C
+Motherboard: ${alignr}${hwmon 3 temp 1}C
+Wireless: ${alignr}${hwmon 7 temp 1}C
 
 Processes: ${alignr}$processes ($running_processes running)
 Load: ${alignr}$loadavg
