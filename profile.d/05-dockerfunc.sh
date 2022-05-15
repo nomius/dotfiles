@@ -602,3 +602,8 @@ dwireshark(){
 		--name wireshark \
 		${DOCKER_REPO_PREFIX}/wireshark
 }
+
+ddisplaysettings() {
+	del_stopped arandr
+	docker run --rm -it --name --network none arandr -e DISPLAY=:0.0 -v /tmp:/tmp nomius/arandr:0.1.10
+}
