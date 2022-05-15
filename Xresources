@@ -12,8 +12,7 @@ URxvt.highlightColor: blue
 URxvt.visualBell: blue
 
 ! Clickable urls
-URxvt.perl-ext: default,matcher
-URxvt.perl-ext-common:      default,matcher
+URxvt.perl-ext-common:      default,matcher,selection-to-clipboard,clipboard,font-size
 URxvt.url-launcher:         browser
 URxvt.matcher.button:       1
 URxvt.url-select.underline: true
@@ -26,7 +25,7 @@ URxvt.keysym.C-S-Down: font-size:decglobal
 URxvt.keysym.C-equal:  font-size:reset
 URxvt.keysym.C-slash:  font-size:show
 
-URxvt.font: xft:Source Code Pro for Powerline:style=Regular:size=11
+URxvt.font: xft:Source Code Pro for Powerline:style=Regular:size=11, xft:Symbola:style=Regular:size=11
 URxvt.boldFont: xft:Source Code Pro for Powerline:style=Bold:size=11
 URxvt.italicFont: xft:Source Code Pro for Powerline:style=Italic:size=11
 URxvt.boldItalicFont: xft:Source Code Pro for Powerline:style=Black Italic:size=11
@@ -46,8 +45,3 @@ xterm*none:        on
 xterm*loginShell: true
 xterm*foreground: white
 xterm*background: black
-
-#xterm.vt100.translations: #override \n\
-#  Ctrl <Key>Down: smaller-vt-font() \n\
-#  Ctrl <Key>Up:   larger-vt-font()
-
