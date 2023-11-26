@@ -9,28 +9,40 @@ set nocompatible
 set viminfo='1000,f1,:1000,/1000
 set history=500
 
-" Backspace behavior and tabs tweaks
+" Backspace & tabs behavior 
 set backspace=2
 set tabstop=4
 set shiftwidth=4
+set noexpandtab
 
-" Don't break my lines (balls) with small lines. I bought a widescreen monitor to use it!
-set tw=380
-set ruler
+" Don't break lines
+set tw=10000
+
+"set ruler # TO be deleted
+
+" Show matching brackers
 set sm
+
+" Default UI color
 set background=dark
-set isk+=_,$,@,%,#,-
-set noignorecase noinfercase
 set nobackup
 if !has("eval")
 	set nofoldenable
 endif
+
+" I hate mouse in vim
 set mouse=
 
 " Show us the command we're typing
 set showcmd
 
-" Highlight matching parens
+" Wildcard (*) search matching. See: set isk? for the whole pattern
+set isk+=_,$,@,%,#,-
+
+" Search case sensitive and do not try to infer case sensitivity
+set noignorecase noinfercase
+
+" Highlight matching paterns
 set showmatch
 
 " Search options: incremental search, highlight search
@@ -39,9 +51,6 @@ set incsearch
 
 " Show full tags when doing search completion
 set showfulltag
-
-" Don't replace tab by spaces
-set noexpandtab
 
 " Speed up macros
 set lazyredraw
@@ -61,7 +70,7 @@ set hidden
 " 1 height windows
 set winminheight=1
 
-" Syntax when printing
+" Syntax on when printing
 set popt+=syntax:y
 
 " set keymap=accents
@@ -78,14 +87,18 @@ set statusline+=%{&fileformat}]              " file format
 set statusline+=%=                           " right align
 set statusline+=%2*0x%-8B\                   " current char
 set statusline+=%-14.(%l,%c%V%)\ %<%P        " offset
-hi StatusLine ctermbg=6 ctermfg=4
-set term=xterm-256color
+if has("gui")
+	" Yeay, gvim like vim!
+	set guioptions=aegiLt
+	hi Normal guibg=black guifg=white
+else
+	hi StatusLine ctermbg=6 ctermfg=4
+endif
 
 " Winmanager configuration
 if has("eval")
 	let persistentBehaviour = 0
 endif
-
 
 " Set the terminal title if allowed
 if &term =~ "xterm" || &term =~ "rxvt"
@@ -93,6 +106,8 @@ if &term =~ "xterm" || &term =~ "rxvt"
 		set title
 	endif
 endif
+" Full colorful terminal
+set term=xterm-256color
 
 " Enable syntax highlighting
 if has("syntax")
@@ -100,26 +115,22 @@ if has("syntax")
 	autocmd BufNewFile,BufRead *.tfvars set syntax=tf
 endif
 
-if has("gui")
-	" Yeay, gvim like vim!
-	set guioptions=aegiLt
-	highlight Normal guibg=black guifg=white
-endif
+" Set convertion of tabs to spaces when working with Python files
+autocmd BufNewFile,BufRead *.py set expandtab
 
-"Read pdf file inside vim
-if has("eval")
-	autocmd BufReadPost *.pdf %!pdftotext -nopgbrk "%" - |fmt -csw78
-endif
-
+" Reading pdfs inside of vim... Although you must have pdftotext for that to work
+autocmd BufReadPost *.pdf %!pdftotext -nopgbrk "%" - |fmt -csw78
+"
 " Go to the line where we left
-if has("eval")
-	autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g'\"" | endif
-endif
+autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g'\"" | endif
 
-if !exists("*ReTag")
-	function ReTag()
-		exe "!ctags -R && sed -e '/^.*   inc\\/.*$/d' tags > tags.new  && mv tags.new tags"
-	endfunction
+" Define retagging function
+if has("eval")
+	if !exists("*ReTag")
+		function ReTag()
+			exe "!ctags -R && sed -e '/^.*   inc\\/.*$/d' tags > tags.new && mv tags.new tags"
+		endfunction
+	endif
 endif
 
 " Some keybinging
@@ -143,3 +154,7 @@ map <silent><C-E> <C-]>
 " Re tag our code
 nmap <F4> :call ReTag()<CR>
 
+map Od <C-Left>
+map Oc <C-Right>
+map! Od <C-Left>
+map! Oc <C-Right>
