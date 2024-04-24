@@ -98,7 +98,8 @@ daz(){
 dgcloud(){
 	docker run --rm -it \
 		-v "${HOME}/.gcloud:/root/.config/gcloud" \
-		-v "${HOME}/.ssh:/root/.ssh:ro" \
+		-v "${HOME}/.ssh:/root/.ssh:rw" \
+		-v "${HOME}/.docker:/root/.docker:rw" \
 		-v "$(which docker):/usr/bin/docker" \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		--name gcloud \
@@ -457,6 +458,10 @@ dtermboy(){
 	docker run --rm -it \
 		--device /dev/snd \
 		--name termboy \
+		-e DISPLAY=${DISPLAY} \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		--device /dev/input \
+		--device /dev/dri \
 		${DOCKER_REPO_PREFIX}/nes "/games/${game}.rom"
 }
 dterraform(){
@@ -605,5 +610,9 @@ dwireshark(){
 
 ddisplaysettings() {
 	del_stopped arandr
-	docker run --rm -it --name --network none arandr -e DISPLAY=:0.0 -v /tmp:/tmp nomius/arandr:0.1.10
+	docker run --rm -it --name arandr --network none -e DISPLAY=:0.0 -v /tmp:/tmp nomius/arandr:0.1.10
+}
+
+matrix() {
+	docker run --rm -it python:alpine sh -c "pip install matrix-rain ; matrix-rain"
 }
