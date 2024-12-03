@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import math
 import multiprocessing
 
@@ -141,12 +142,12 @@ def root_usage():
     capacity_show = math.ceil(capacity/(1024*1024*1024))
     percentaje_used = math.ceil(used*100/capacity)
 
-    return "/ " + str(capacity_show) + " (" + str(percentaje_used) + "%)"
+    return ("/ " + str(capacity_show) + " (" + str(percentaje_used) + "%)", disk.f_bavail)
 
 def cores():
     return str(multiprocessing.cpu_count()) + " cores"
 
-def memmory():
+def memory():
     meminfo = dict((i.split()[0].rstrip(':'), int(i.split()[1])) for i in open('/proc/meminfo').readlines())
     used = meminfo['MemTotal'] - meminfo['MemFree'] - meminfo['Cached']
     percentaje_used = (used*100)/meminfo['MemTotal']
@@ -177,7 +178,7 @@ def latency_to_gateway():
 
 root = root_usage()
 cores = cores()
-memory = memmory()
+memory = memory()
 wireless = wireless()
 latency = latency_to_gateway()
 if not latency:
@@ -185,4 +186,5 @@ if not latency:
 else:
     latency = '<span foreground="#7af">(' + latency + ' ms)</span> | '
 
-print(' <span foreground="#ffaaaa">' + root + "</span> | " + '<span foreground="#aaffaa">' + cores + "</span> | " + '<span foreground="#ffffaa">' + memory + "</span> | " + '<span foreground="#ffffdd">' + wireless + "</span> | " + latency)
+print(' <span foreground="#ffaaaa">' + root[0] + "</span> | " + '<span foreground="#aaffaa">' + cores + "</span> | " + '<span foreground="#ffffaa">' + memory + "</span> | " + '<span foreground="#ffffdd">' + wireless + "</span> | " + latency)
+print(root[1], file=sys.stderr)
