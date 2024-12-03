@@ -10,8 +10,6 @@ if [ -x /usr/bin/dbus-launch -a -z "${DBUS_SESSION_BUS_ADDRESS}" ]; then
 	export DBUS_SESSION_BUS_PID
 fi
 
-hsetroot -center ~/.local/wallpapers/default &
-
 # launch tint2
 if [ -f ~/.config/tint2/tint2rc ]; then
 	tint2 &
@@ -29,7 +27,20 @@ else
 	fi
 fi
 
+# Screen setup
+displays=$(xrandr | grep " connected" | wc -l)
+if [ "${displays}" = "2" ]; then
+	dev=$(xrandr | awk '/^DP.* connected/ {print $1}')
+	xrandr -d :0 --output ${dev} --left-of eDP-1 --auto
+	xrandr --output ${dev} --primary
+	hsetroot -fill /home/nomius/Downloads/walls/3440x1440/aurora.png &
+else
+	hsetroot -center ~/.local/wallpapers/default &
+fi
+
 # launch conky (if you want conky, just uncomment this)
 if which conky >/dev/null 2>&1; then
 	conky &
 fi
+
+
