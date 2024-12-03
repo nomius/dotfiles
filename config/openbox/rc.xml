@@ -170,24 +170,18 @@
   <right>0</right>
 </margins>
 
-<dock>
+<!--<dock>
   <position>TopLeft</position>
-  <!-- (Top|Bottom)(Left|Right|)|Top|Bottom|Left|Right|Floating -->
   <floatingX>0</floatingX>
   <floatingY>0</floatingY>
   <noStrut>no</noStrut>
   <stacking>Above</stacking>
-  <!-- 'Above', 'Normal', or 'Below' -->
   <direction>Vertical</direction>
-  <!-- 'Vertical' or 'Horizontal' -->
   <autoHide>no</autoHide>
   <hideDelay>300</hideDelay>
-  <!-- in milliseconds (1000 = 1 second) -->
   <showDelay>300</showDelay>
-  <!-- in milliseconds (1000 = 1 second) -->
   <moveButton>Middle</moveButton>
-  <!-- 'Left', 'Middle', 'Right' -->
-</dock>
+</dock>-->
 
 <keyboard>
   <chainQuitKey>C-g</chainQuitKey>
@@ -204,12 +198,6 @@
   </keybind>
   <keybind key="C-mod5-Right">
     <action name="GoToDesktop"><to>right</to><wrap>yes</wrap></action>
-  </keybind>
-  <keybind key="C-A-Up">
-    <action name="GoToDesktop"><to>up</to><wrap>yes</wrap></action>
-  </keybind>
-  <keybind key="C-A-Down">
-    <action name="GoToDesktop"><to>down</to><wrap>yes</wrap></action>
   </keybind>
   <keybind key="S-A-Left">
     <action name="SendToDesktop"><to>left</to><wrap>yes</wrap></action>
@@ -247,6 +235,12 @@
     <action name="MoveResizeTo">
       <monitor>1</monitor>
     </action>
+  </keybind>
+  <keybind key="C-A-Up">
+    <action name="MaximizeVert"/>
+  </keybind>
+  <keybind key="C-A-Down">
+    <action name="ToggleMaximize"><direction>vertical</direction></action>
   </keybind>
 
   <!-- Keybindings for windows -->
@@ -366,6 +360,16 @@
       <command>kwort-mixer open-mixer</command>
     </action>
   </keybind>
+  <keybind key="A-m">
+    <action name="Execute">
+      <startupnotify>
+        <enabled>true</enabled>
+        <name>Myxer</name>
+      </startupnotify>
+      <command>/home/nomius/Downloads/tools/myxer</command>
+    </action>
+  </keybind>
+
   <keybind key="C-A-r">
     <action name="Execute">
       <startupnotify>
@@ -459,9 +463,6 @@
     </mousebind>
     <mousebind button="C-A-Up" action="Click">
       <action name="GoToDesktop"><to>previous</to></action>
-    </mousebind>
-    <mousebind button="C-A-Down" action="Click">
-      <action name="GoToDesktop"><to>next</to></action>
     </mousebind>
     <mousebind button="A-S-Up" action="Click">
       <action name="SendToDesktop"><to>previous</to></action>
@@ -674,13 +675,6 @@
     <mousebind button="A-Down" action="Click">
       <action name="GoToDesktop"><to>next</to></action>
     </mousebind>
-    <mousebind button="C-A-Up" action="Click">
-      <action name="GoToDesktop"><to>previous</to></action>
-    </mousebind>
-    <mousebind button="C-A-Down" action="Click">
-      <action name="GoToDesktop"><to>next</to></action>
-    </mousebind>
-
     <mousebind button="Left" action="Press">
       <action name="Focus"/>
       <action name="Raise"/>
