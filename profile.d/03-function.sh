@@ -38,64 +38,9 @@ decrypt()
 }
 
 multihead() {
-	center_identifier=BenQ
-	right_identifier=H4ZM601271
-
-	set -x
-
-	if [ "$1" = "off" ]; then
-		for x in $(xrandr | awk -F ' ' '/ connected/ {print $1}' | grep -E "^DP|^HDMI"); do
-			xrandr -d :0 --output ${x} --off
-		done
-		m="Notification: Screen layout multi-head setup disabled"
-	else
-		edp=$(xrandr | awk -F ' ' '/eDP.* connected/ {print $1}')
-		i=0
-		for x in $(xrandr | awk -F ' ' '/ connected/ {print $1}' | grep -E "^DP|^HDMI"); do
-			outputs[$i]=$x
-			i=$(($i + 1))
-		done
-
-		i=0
-		for x in ${outputs[@]}; do
-			ids[$i]=$(xrandr --props | awk -v monitor="^$x connected" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | grep CONNECTOR | awk '{print $2}')
-			i=$(($i + 1))
-		done
-
-		for x in $(find /sys/devices -name edid); do
-			p=$(dirname ${x})
-			[ -n "${right_identifier}" ] && grep -q "${right_identifier}" "${x}" 2>/dev/null && eval "${right_identifier}"=$(cat "${p}/connector_id")
-			[ -n "${center_identifier}" ] && grep -q "${center_identifier}" "${x}" 2>/dev/null && eval "${center_identifier}"=$(cat "${p}/connector_id")
-		done
-
-		for((i=0;i<${#ids};i++)); do
-			echo "id[${i}] = ${ids[$i]}"
-			if [ -n "${right_identifier}" -a "${ids[$i]}" = "${!right_identifier}" ]; then
-				right_name="${outputs[$i]}"
-			fi
-
-			if [ -n "${center_identifier}" -a "${ids[$i]}" = "${!center_identifier}" ]; then
-				center_name="${outputs[$i]}"
-			fi
-		done
-
-		if [ -n "${center_name}" -a -n "${right_name}" ]; then
-			xrandr -d :0 --output "${center_name}" --right-of "${edp}" --auto
-			xrandr -d :0 --output "${right_name}" --right-of "${center_name}" --auto
-			p="${center_name}"
-		elif [ -n "${center_name}" ]; then
-			xrandr -d :0 --output "${center_name}" --right-of "${edp}" --auto
-			p="${center_name}"
-		elif [ -n "${right_name}" ]; then
-			xrandr -d :0 --output "${right_name}" --right-of "${edp}" --auto
-			p="${right_name}"
-		else
-			p="${edp}"
-		fi
-		xrandr --output "${p}" --primary
-		m="Notification: Screen layout setup complete"
-	fi
-	notify-send "${m}"
+	xrandr -d :0 --output DP-2 --left-of eDP-1 --auto
+	xrandr --output DP-2 --primary
+	notify-send "Notification: Screen layout setup complete"
 }
 
 json() {
