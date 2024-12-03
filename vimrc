@@ -92,7 +92,7 @@ if has("gui")
 	set guioptions=aegiLt
 	hi Normal guibg=black guifg=white
 else
-	hi StatusLine ctermbg=6 ctermfg=4
+	hi StatusLine ctermbg=6 ctermfg=8
 endif
 
 " Winmanager configuration
