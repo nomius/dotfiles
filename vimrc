@@ -158,3 +158,5 @@ map Od <C-Left>
 map Oc <C-Right>
 map! Od <C-Left>
 map! Oc <C-Right>
+
+let g:arduino_recommended_style=0
