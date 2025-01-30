@@ -1,5 +1,7 @@
-# Cool trick to decrypt the blowfish encrypted vault, read it and get it removed right away
-$(shell openssl bf -pbkdf2 -d < ${VAULT} > .env)
+# Cool trick to decrypt the aes256 encrypted vault, read it and get it removed right away
+# You can encrypt your vault with: openssl enc -aes-256-cbc -md sha512 -pbkdf2 -iter 1000000 -salt -in vault.sh -out ${VAULT}
+
+$(shell test -f .env || openssl enc -d -aes-256-cbc -md sha512 -pbkdf2 -iter 1000000 -salt -in ${VAULT} -out .env)
 -include $(shell [ -f .env ] && echo .env)
 -include $(shell shred -u .env &>/dev/null)
 
