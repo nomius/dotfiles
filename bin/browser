@@ -29,6 +29,7 @@ case "$BROWSER" in
 	chrome)
 		if [ -e /usr/bin/google-chrome-stable ]; then
 			exec /usr/bin/google-chrome-stable $*
+			#exec /usr/bin/google-chrome-stable --disable-gpu-driver-bug-workarounds --ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy --enable-features=VaapiVideoDecoder --disable-features=UseChromeOSDirectVideoDecoder $*
 		else
 			echo "Chrome is not installed" | dmenu -i -p "Error"
 		fi

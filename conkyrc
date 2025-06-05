@@ -53,7 +53,6 @@ end
 conky.config = {
 	background = false,
 	font = 'Sans:size=8',
---xftfont Sans:size=10
 	use_xft = true,
 	xftalpha = 0.9,
 	update_interval = 0.5,
@@ -118,11 +117,12 @@ Hostname: $alignr$nodename
 Kernel: $alignr$kernel
 Uptime: $alignr$uptime
 
-CPU: ${alignr}${hwmon 6 temp 1}C  (Fan: ${hwmon 6 fan 1} RPM)
+CPU: ${alignr}${hwmon 5 temp 1}C  (Fan: ${hwmon 5 fan 1} RPM)
+#CPU: ${alignr}${hwmon 6 temp 1}C
 NVMe: ${alignr}${hwmon 0 temp 1}C
-Motherboard: ${alignr}${hwmon 2 temp 1}C
-Wifi: ${alignr}${hwmon 9 temp 1}C
-Platform Controller Hub: ${alignr}${hwmon 2 temp 1}C
+#Motherboard: ${alignr}${hwmon 2 temp 1}C
+Wifi: ${alignr}${hwmon 8 temp 1}C
+Platform Controller Hub: ${alignr}${hwmon 3 temp 1}C
 
 Processes: ${alignr}$processes ($running_processes running)
 Load: ${alignr}$loadavg
