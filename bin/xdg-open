@@ -168,7 +168,7 @@ if [ -z "$cmd" ]; then
 	if [ $iFiles -eq 1 ]; then
 		cmd=$(INIhParser $aFiles "Exec")
 	elif [ $iFiles -eq 0 ]; then
-		cmd=$(GetCmd)
+		[[ "${1}" == http*://* ]] && cmd="browser" || cmd=$(GetCmd)
 	else
 		for x in ${aFiles[@]}; do
 			name="$(INIhParser $x "Name")"

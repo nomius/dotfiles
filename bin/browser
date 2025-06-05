@@ -34,6 +34,10 @@ case "$BROWSER" in
 		fi
 	;;
 	*)
+		if [ -n "${BROWSER}" ]; then
+			eval $BROWSER '$*'
+			exit
+		fi
 		for x in firefox chrome brave chromium; do
 			if which $x &>/dev/null; then
 				[ -n "${available}" ] && available="${available}\n${x}" || available="${x}"
