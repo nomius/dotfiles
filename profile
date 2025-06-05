@@ -6,3 +6,5 @@ for f in ~/.profile.d/*.sh; do
 	[ -x "${f}" ] && . "${f}"
 done
 
+[ -e ~/.bashrc ] && . ~/.bashrc
+
