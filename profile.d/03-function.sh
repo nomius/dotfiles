@@ -93,3 +93,18 @@ kubens() {
 	[ -z "${1}" ] && return
 	kubectl config set-context --current --namespace="${1}"
 }
+
+# TODO: This needs tweaking if using outside of my setup.
+resync_enable_display() {
+	dev=$(xrandr -d :0 -q | grep primary | awk '{print $1}')
+	xrandr --output $dev --auto
+	sleep 2
+	xrandr -d :0 -q &>/dev/null
+	displays=$(xrandr | grep " connected" | wc -l)
+	if [ "${displays}" = "2" ]; then
+		eDP=$(xrandr | awk '/^eDP.* connected/ {print $1}')
+		dev=$(xrandr | awk '/^DP.* connected/ {print $1}')
+		xrandr -d $DISPLAY --output ${dev} --left-of ${eDP} --auto
+		xrandr --output ${dev} --primary
+	fi
+}
