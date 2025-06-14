@@ -28,12 +28,17 @@ else
 fi
 
 # Screen setup
+# Explaination:
+# * I use an ultra-wide display as my main monitor connected through usb-C (xrand detect is as DP).
+# * The conditional detects the ultra-wide so mark it as primary and sets a wallpaper according to its resolution
+# * If no display is attached then it sets a "single" lower resolution background
 displays=$(xrandr | grep " connected" | wc -l)
 if [ "${displays}" = "2" ]; then
+	eDP=$(xrandr | awk '/^eDP.* connected/ {print $1}')
 	dev=$(xrandr | awk '/^DP.* connected/ {print $1}')
-	xrandr -d :0 --output ${dev} --left-of eDP-1 --auto
+	xrandr -d $DISPLAY --output ${dev} --left-of ${eDP} --auto
 	xrandr --output ${dev} --primary
-	hsetroot -fill /home/nomius/Downloads/walls/3440x1440/aurora.png &
+	hsetroot -fill ~/.local/wallpapers/aurora.png &
 else
 	hsetroot -center ~/.local/wallpapers/default &
 fi
