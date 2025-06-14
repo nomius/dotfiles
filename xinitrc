@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+/sbin/lsmod | grep -q nvidia && { xrandr --setprovideroutputsource modesetting NVIDIA-G0; xrandr --auto; }
+
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
 
