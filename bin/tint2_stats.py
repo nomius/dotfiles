@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 
+# By David B. Cortarello (Nomius/DaveC) <dcortarello@gmail.com>
+
 import os
-import sys
 import math
 import multiprocessing
 
 import socket, struct
 
 import select, time
+
+# The ping class wasn't actually a class but a set of functions I borrowed 
+# from somewhere I can't remember and created a class out of it for 
+# encapsulation. 
+# If you wrote the below "ping" code, please let me know so I can put your 
+# name somewhere in the credits.
 
 class ping:
     ICMP_ECHO_REQUEST = 8
@@ -141,8 +148,7 @@ def root_usage():
 
     capacity_show = math.ceil(capacity/(1024*1024*1024))
     percentaje_used = math.ceil(used*100/capacity)
-
-    return ("/ " + str(capacity_show) + " (" + str(percentaje_used) + "%)", disk.f_bavail)
+    return ("/ " + str(capacity_show) + "G (" + str(percentaje_used) + "%)", disk.f_bavail)
 
 def cores():
     return str(multiprocessing.cpu_count()) + " cores"
@@ -155,11 +161,15 @@ def memory():
     return 'Mem: %.2f GB (%d%%)' % (used/(1024*1024), math.ceil(percentaje_used))
 
 def wireless():
-    with open("/proc/net/wireless") as f:
-        for line in f.readlines():
-            if ":" in line:
-                lines = list(filter(None, line.split(" ")))
-                return lines[0] + " " + str(math.ceil(float(lines[2] + "0")*100/70)) + "%"
+    try:
+        with open("/proc/net/wireless") as f:
+            for line in f.readlines():
+                if ":" in line:
+                    lines = list(filter(None, line.split(" ")))
+                    return math.ceil(float(lines[2] + "0")*100/70)
+    except:
+        return None
+    return None
 
 def latency_to_gateway():
     try:
@@ -176,15 +186,23 @@ def latency_to_gateway():
     return None
 
 
-root = root_usage()
-cores = cores()
+linux_icon = '<span foreground="#dda50a">&#xf17c;</span>'
+root = root_usage()[0]
+root_usage_str = '<span foreground="#ffaaaa">&#xf0a0; ' + root + '</span>'
+total_cores = cores()
+cores_str = '<span foreground="#aaffaa">&#xf2db; ' + total_cores + '</span>'
 memory = memory()
+memory_usage_str = '<span foreground="#ffffaa">&#xf538; ' + memory + '</span>'
 wireless = wireless()
+if not wireless:
+    wireless_signal_str = '<span foreground="#ffffdd">&#xf796; Wired</span>'
+else:
+    wireless_signal_str = '<span foreground="#ffffdd">&#xf1eb; ' + str(wireless) + '%</span>'
+
 latency = latency_to_gateway()
 if not latency:
-    latency = '<span foreground="#faa">(timeout)  </span> | '
+    latency_to_router_str = '<span foreground="#faa">&#xf0ac; (&#xf00d;)</span> '
 else:
-    latency = '<span foreground="#7af">(' + latency + ' ms)</span> | '
+    latency_to_router_str = '<span foreground="#7af">&#xf0ac; (' + latency + ' ms)</span> '
 
-print(' <span foreground="#ffaaaa">' + root[0] + "</span> | " + '<span foreground="#aaffaa">' + cores + "</span> | " + '<span foreground="#ffffaa">' + memory + "</span> | " + '<span foreground="#ffffdd">' + wireless + "</span> | " + latency)
-print(root[1], file=sys.stderr)
+print(root_usage_str + ' | ' + cores_str + ' | ' + memory_usage_str + ' | ' + wireless_signal_str + ' | ' + latency_to_router_str)
