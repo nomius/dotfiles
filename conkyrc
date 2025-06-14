@@ -53,6 +53,7 @@ end
 conky.config = {
 	background = false,
 	font = 'Sans:size=8',
+--xftfont Sans:size=10
 	use_xft = true,
 	xftalpha = 0.9,
 	update_interval = 0.5,
@@ -117,24 +118,21 @@ Hostname: $alignr$nodename
 Kernel: $alignr$kernel
 Uptime: $alignr$uptime
 
-CPU: ${alignr}${hwmon 5 temp 1}C  (Fan: ${hwmon 5 fan 1} RPM)
-#CPU: ${alignr}${hwmon 6 temp 1}C
-NVMe: ${alignr}${hwmon 0 temp 1}C
-#Motherboard: ${alignr}${hwmon 2 temp 1}C
-Wifi: ${alignr}${hwmon 8 temp 1}C
-Platform Controller Hub: ${alignr}${hwmon 3 temp 1}C
+CPU: ${alignr}${hwmon thinkpad temp 1}C
+Fan1: ${alignr}${hwmon thinkpad fan 1} RPM
+Fan 2: ${alignr}${hwmon thinkpad fan 2} RPM
+NVMe: ${alignr}${hwmon nvme temp 1}C
+Motherboard: ${alignr}${hwmon acpitz temp 1}C
+Wifi: ${alignr}${hwmon iwlwifi_1 temp 1}C
+Nvidia ${alignr}${exec nvidia-smi --query-gpu=temperature.gpu --format=csv,nounits,noheader}
+#Platform Controller Hub: ${alignr}${hwmon 2 temp 1}C
 
 Processes: ${alignr}$processes ($running_processes running)
 Load: ${alignr}$loadavg
 
-CPU1 ${alignr}${cpu cpu1}% (${freq 1})
-${cpubar 4 cpu1}
-CPU2 ${alignr}${cpu cpu2}% (${freq 2})
-${cpubar 4 cpu2}
-CPU3 ${alignr}${cpu cpu3}% (${freq 3})
-${cpubar 4 cpu3}
-CPU4 ${alignr}${cpu cpu4}% (${freq 4})
-${cpubar 4 cpu4}
+CPU ${alignr}${cpu cpu0}% (${freq 1})
+${cpubar 4 cpu0}
+${cpugraph 10 cpu0}
 
 Ram ${alignr}$mem / $memmax ($memperc%)
 ${membar 4}
