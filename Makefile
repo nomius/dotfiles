@@ -13,18 +13,6 @@ bin:
 	mkdir -p $(HOME)/.bin
 	for x in bin/*; do [ -f $$x ] && ln -sf $(CURDIR)/$$x $(HOME)/.bin/$$(basename $$x) || : ; done
 
-.PHONY: global
-global:
-	if [ -d /etc/rc.d ]; then
-		sudo install -m 0755 init/encryption /etc/rc.d/encryption
-	elif [ -d /etc/init.d ]; then
-		sudo install -m 0755 init/encryption /etc/init.d/encryption
-	else
-		echo "/etc/rc.d or /etc/init.d not found"
-	fi
-	sudo install -m 0644 personal.map.gz /usr/share/kbd/keymaps/i386/qwerty/personal.map.gz
-	sudo install -m 0644 remap-keys.inc	/usr/share/kbd/keymaps/i386/include/remap-keys.inc
-
 .PHONY: dotfiles
 dotfiles:
 	for x in *; do [ -f $$x ] && ln -sf $(CURDIR)/$$x $(HOME)/.$$(basename $$x) || : ; done
