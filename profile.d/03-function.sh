@@ -106,5 +106,9 @@ resync_enable_display() {
 		dev=$(xrandr | awk '/^DP.* connected/ {print $1}')
 		xrandr -d $DISPLAY --output ${dev} --left-of ${eDP} --auto
 		xrandr --output ${dev} --primary
+	else
+		eDP=$(xrandr | awk '/^eDP.* connected/ {print $1}')
+		xrandr --output ${eDP} --primary
+
 	fi
 }
