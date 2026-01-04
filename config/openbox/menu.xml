@@ -54,12 +54,21 @@
 </menu>
 
 <menu id="apps-net-menu" label="Networking">
-  <item label="Web Browser">
+  <item label="Google Chrome">
     <action name="Execute">
-      <command>browser</command>
+      <command>google-chrome</command>
       <startupnotify>
         <enabled>yes</enabled>
-        <wmclass>Browser</wmclass>
+        <wmclass>google-chrome</wmclass>
+      </startupnotify>
+    </action>
+  </item>
+  <item label="Mozilla Firefox">
+    <action name="Execute">
+      <command>firefox</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+        <wmclass>firefox</wmclass>
       </startupnotify>
     </action>
   </item>
@@ -86,7 +95,7 @@
 <menu id="apps-office-menu" label="Office">
   <item label="Calculator">
     <action name="Execute">
-      <command>galculator</command>
+      <command>qalculate-gtk</command>
       <startupnotify>
         <enabled>yes</enabled>
         <wmclass>Calculator</wmclass>
@@ -159,16 +168,7 @@
 </menu>
 
 <menu id="apps-multimedia-menu" label="Multimedia">
-  <item label="Museeks">
-    <action name="Execute">
-      <command>museeks</command>
-      <startupnotify>
-        <enabled>yes</enabled>
-        <wmclass>Museeks</wmclass>
-      </startupnotify>
-    </action>
-  </item>
-  <item label="Volume mixer">
+  <item label="Pulse mixer">
     <action name="Execute">
       <command>kwort-mixer open-mixer</command>
       <startupnotify>
@@ -177,21 +177,21 @@
       </startupnotify>
     </action>
   </item>
-  <item label="Gnome-MPlayer">
+  <item label="Gmplayer">
+    <action name="Execute">
+      <command>gmplayer</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+        <wmclass>Gmplayer</wmclass>
+      </startupnotify>
+    </action>
+  </item>
+  <item label="Gnome Mplayer">
     <action name="Execute">
       <command>gnome-mplayer</command>
       <startupnotify>
         <enabled>yes</enabled>
-        <wmclass>GNOME MPlayer</wmclass>
-      </startupnotify>
-    </action>
-  </item>
-  <item label="Asunder">
-    <action name="Execute">
-      <command>asunder</command>
-      <startupnotify>
-        <enabled>yes</enabled>
-        <wmclass>Asunder</wmclass>
+        <wmclass>Gnome-Mplayer</wmclass>
       </startupnotify>
     </action>
   </item>
@@ -225,6 +225,15 @@
       <startupnotify>
         <enabled>yes</enabled>
         <wmclass>GpicView</wmclass>
+      </startupnotify>
+    </action>
+  </item>
+  <item label="Screenshot">
+    <action name="Execute">
+      <command>screenshooter</command>
+      <startupnotify>
+        <enabled>yes</enabled>
+        <wmclass>screenshooter</wmclass>
       </startupnotify>
     </action>
   </item>
@@ -271,7 +280,7 @@
 </menu>
 
 <menu id="root-menu" label="Openbox 3">
-  <item label="Rxvt Unicode">
+  <item label="Terminal">
     <action name="Execute">
       <command>urxvt</command>
       <startupnotify>
