@@ -23,6 +23,21 @@ function WirelessSid()
 	end
 end
 
+
+function Nvidia()
+    local f = io.popen("command -v nvidia-smi >/dev/null 2>&1 && echo 1")
+    local res = f:read("*l")
+    f:close()
+
+    if res == "1" then
+        return [[
+Nvidia ${alignr}${exec nvidia-smi --query-gpu=temperature.gpu --format=csv,nounits,noheader}
+]]
+    else
+        return ""
+    end
+end
+
 -- You might want to modify this function
 function customSensors()
     local f = io.open('/proc/cpuinfo', "r")
@@ -52,15 +67,14 @@ end
 
 conky.config = {
 	background = false,
-	font = 'Sans:size=8',
---xftfont Sans:size=10
+	font = 'Sans:size=9',
 	use_xft = true,
 	xftalpha = 0.9,
 	update_interval = 0.5,
 	total_run_times = 0,
 	own_window = true,
 	own_window_type = 'normal',
-	own_window_transparent = true,
+    own_window_colour = '#00000080',
 	own_window_class = 'override',
 	own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
 	double_buffer = true,
@@ -94,21 +108,20 @@ ${color white}${alignr 52}${voffset -91}${execi 300 weather.py get weather main 
 ${color white}${alignr 52}${voffset 9}${execi 300 weather.py get weather main humidity} %${color}
 ${color white}${alignr 52}${voffset 9}${execi 300 weather.py get weather wind speed} m/s${color}
 
-
-${color3}${voffset -13}${alignc 77}${execi 300 weather.py get forecast forecast 0 day}${color}
+${color3}${voffset -5}${alignc 77}${execi 300 weather.py get forecast forecast 0 day}${color}
 ${color3}${voffset -15}${alignc}${execi 300 weather.py get forecast forecast 1 day}${color}
 ${color3}${voffset -15}${alignc -77}${execi 300 weather.py get forecast forecast 2 day}${color}
 
-${color white}${voffset 31} ${alignc 77}${execi 300 weather.py get forecast forecast 0 min}°C/${execi 300 weather.py get forecast forecast 0 max}°C${color}
-${color white}${voffset -15}${alignc}${execi 300 weather.py get forecast forecast 1 min}°C/${execi 300 weather.py get forecast forecast 1 max}°C${color}
-${color white}${voffset -15}${alignc -77}${execi 300 weather.py get forecast forecast 2 min}C°/${execi 300 weather.py get forecast forecast 2 max}°C${color}
+${color white}${voffset 19} ${alignc 77}${execi 300 weather.py get forecast forecast 0 min}°C/${execi 300 weather.py get forecast forecast 0 max}°C${color}
+${color white}${voffset -17}${alignc}${execi 300 weather.py get forecast forecast 1 min}°C/${execi 300 weather.py get forecast forecast 1 max}°C${color}
+${color white}${voffset -17}${alignc -77}${execi 300 weather.py get forecast forecast 2 min}C°/${execi 300 weather.py get forecast forecast 2 max}°C${color}
 
-${image ~/.local/pixmaps/weather/pressure.png -p 306,2 -s 16x16}
-${image ~/.local/pixmaps/weather/humidity.png -p 306,26 -s 16x16}
-${image ~/.local/pixmaps/weather/wind-2.png -p 306,50 -s 16x16}
-${execi 300 cp -f ~/.local/pixmaps/weather/forecast_icons/$(weather.py get forecast forecast 0 icon).png ~/.cache/weather/weather-1.png}${image ~/.cache/weather/weather-1.png -p 82,103 -s 32x32}
-${execi 300 cp -f ~/.local/pixmaps/weather/forecast_icons/$(weather.py get forecast forecast 0 icon).png ~/.cache/weather/weather-2.png}${image ~/.cache/weather/weather-2.png -p 161,103 -s 32x32}
-${execi 300 cp -f ~/.local/pixmaps/weather/forecast_icons/$(weather.py get forecast forecast 0 icon).png ~/.cache/weather/weather-3.png}${image ~/.cache/weather/weather-3.png -p 237,103 -s 32x32}${font}${voffset -120}
+${image ~/.local/pixmaps/weather/pressure.png -p 310,10 -s 16x16}
+${image ~/.local/pixmaps/weather/humidity.png -p 310,36 -s 16x16}
+${image ~/.local/pixmaps/weather/wind-2.png -p 311,62 -s 16x16}
+${execi 300 cp -f ~/.local/pixmaps/weather/forecast_icons/$(weather.py get forecast forecast 0 icon).png ~/.cache/weather/weather-1.png}${image ~/.cache/weather/weather-1.png -p 85,115 -s 32x32}
+${execi 300 cp -f ~/.local/pixmaps/weather/forecast_icons/$(weather.py get forecast forecast 0 icon).png ~/.cache/weather/weather-2.png}${image ~/.cache/weather/weather-2.png -p 161,115 -s 32x32}
+${execi 300 cp -f ~/.local/pixmaps/weather/forecast_icons/$(weather.py get forecast forecast 0 icon).png ~/.cache/weather/weather-3.png}${image ~/.cache/weather/weather-3.png -p 237,115 -s 32x32}${font}${voffset -130}
 # Weather ends here
 
 
@@ -120,19 +133,23 @@ Uptime: $alignr$uptime
 
 CPU: ${alignr}${hwmon thinkpad temp 1}C
 Fan1: ${alignr}${hwmon thinkpad fan 1} RPM
-Fan 2: ${alignr}${hwmon thinkpad fan 2} RPM
+#Fan 2: ${alignr}${hwmon thinkpad fan 2} RPM
 NVMe: ${alignr}${hwmon nvme temp 1}C
 Motherboard: ${alignr}${hwmon acpitz temp 1}C
 Wifi: ${alignr}${hwmon iwlwifi_1 temp 1}C
-Nvidia ${alignr}${exec nvidia-smi --query-gpu=temperature.gpu --format=csv,nounits,noheader}
+]]
+..
+Nvidia()
+..
+[[
 #Platform Controller Hub: ${alignr}${hwmon 2 temp 1}C
 
 Processes: ${alignr}$processes ($running_processes running)
 Load: ${alignr}$loadavg
 
 CPU ${alignr}${cpu cpu0}% (${freq 1})
-${cpubar 4 cpu0}
-${cpugraph 10 cpu0}
+${cpubar 4,0 cpu0}
+${cpugraph cpu0 35,0 00ffff 0000ff}
 
 Ram ${alignr}$mem / $memmax ($memperc%)
 ${membar 4}
@@ -150,7 +167,7 @@ ${top_mem name 3}$alignr${top_mem cpu 3}   ${top_mem mem 3}
 ${color white}Filesystem ${hr 1}${color}
 
 Root: ${alignr}${fs_free /} / ${fs_size /}
-${fs_bar 4 /}
+${fs_bar 4,0 /}
 ]]
 ..
 WirelessSid()
@@ -159,7 +176,7 @@ WirelessSid()
 ${color white}IP Address: ${alignr}${addr ]] ..  findInterface() .. [[}
 
 Down ${downspeed ]] .. findInterface() .. [[} ${alignr}Up ${upspeed ]] .. findInterface() .. [[}
-${downspeedgraph ]] .. findInterface() .. [[ 25,160} ${alignr}${upspeedgraph ]] .. findInterface() .. [[ 25,160}
+${downspeedgraph ]] .. findInterface() .. [[ 25,160 00ffff 0000ff} ${alignr}${upspeedgraph ]] .. findInterface() .. [[ 25,160 00ffff 0000ff}
 Total ${totaldown ]] .. findInterface() .. [[} ${alignr}Total ${totalup ]] .. findInterface() .. [[}
 
 Connections ${alignr} Remote Service/Port
