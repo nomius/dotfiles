@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+dmenu -P -p "Password for sudo" </dev/null
