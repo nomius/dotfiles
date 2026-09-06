@@ -92,6 +92,7 @@ mouse_scroll_down = iconify
 # Execp 1 : print disk usage for the root partition
 execp = new
 execp_command = sudo /usr/bin/tint2_stats.py
+execp_lclick_command = wifi-ui-setup
 execp_background_id = 0
 execp_interval = 2
 execp_markup = 1
