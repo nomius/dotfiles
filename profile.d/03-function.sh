@@ -112,3 +112,7 @@ resync_enable_display() {
 
 	fi
 }
+
+claude() {
+	docker run --rm -it -v $HOME/Projects/claude:/home/node/workspace -v $HOME/.claude.json:/home/node/.claude.json -v $HOME/.claude:/home/node/.claude --name claude claude:latest $1
+}
