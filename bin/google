@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-browser "http://google.com/search?q=$(echo "$*" | sed 's/ /+/g')"
