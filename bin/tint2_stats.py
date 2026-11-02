@@ -4,11 +4,13 @@
 
 import os
 import math
-import multiprocessing
+import fcntl, sys
 
 import socket, struct
 
 import select, time
+
+from pathlib import Path
 
 # The ping class wasn't actually a class but a set of functions I borrowed 
 # from somewhere I can't remember and created a class out of it for 
@@ -142,23 +144,78 @@ class ping:
         return delay
 
 def root_usage():
-    disk = os.statvfs("/")
-    capacity = disk.f_bsize * disk.f_blocks
-    used = disk.f_bsize * (disk.f_blocks - disk.f_bavail) 
+    st = os.statvfs("/")
+    
+    free_bytes = st.f_frsize * st.f_bavail
+    
+    if st.f_blocks > 0:
+        used_percent = ((st.f_blocks - st.f_bavail) / st.f_blocks) * 100
+    else:
+        used_percent = 0.0
+    
+    # Define binary byte constants
+    ONE_MB = 1024 * 1024
+    ONE_GB = 1024 * 1024 * 1024
+    
+    # Format percentage string
+    pct_string = f" ({used_percent:.0f}%)"
+    
+    # Determine the format based on size and append percentage
+    if free_bytes < ONE_GB:
+        free_mb = free_bytes / ONE_MB
+        return f"/ {free_mb:.1f} MB" + pct_string
+    else:
+        free_gb = free_bytes / ONE_GB
+        return f"/ {free_gb:.1f} GB" + pct_string
 
-    capacity_show = math.ceil(capacity/(1024*1024*1024))
-    percentaje_used = math.ceil(used*100/capacity)
-    return ("/ " + str(capacity_show) + "G (" + str(percentaje_used) + "%)", disk.f_bavail)
+def print_cpu_package_temp():
+    hwmon_base = Path('/sys/class/hwmon')
+    
+    if not hwmon_base.exists():
+        return
+
+    # 1. Iterate through all hwmon device directories (e.g., hwmon0, hwmon1)
+    for hwmon_dir in hwmon_base.iterdir():
+        
+        # 2. Search for any file matching the pattern 'temp*_label'
+        for label_file in hwmon_dir.glob('temp*_label'):
+            try:
+                # Read the content, strip whitespace/newlines
+                label_content = label_file.read_text().strip()
+                
+                # 3. Check if this label belongs to the main CPU package
+                if label_content == "Package id 0":
+                    
+                    # 4. Determine the matching 'temp*_input' filename
+                    # label_file.name looks like 'temp1_label', we replace '_label' with '_input'
+                    input_filename = label_file.name.replace('_label', '_input')
+                    input_file = hwmon_dir / input_filename
+                    
+                    if input_file.exists():
+                        # Read the raw temperature value
+                        raw_temp = input_file.read_text().strip()
+                        
+                        # Convert millidegrees Celsius to standard Celsius
+                        celsius_temp = float(raw_temp) / 1000
+                        
+                        return f"{celsius_temp}°C"
+                        return  # Exit early since we found 'Package id 0'
+                        
+            except (PermissionError, ValueError, FileNotFoundError):
+                # Safely skip files that are locked, unreadable, or missing
+                continue
+    return
+
 
 def cores():
-    return str(multiprocessing.cpu_count()) + " cores"
+    return "Temp " + print_cpu_package_temp()
 
 def memory():
     meminfo = dict((i.split()[0].rstrip(':'), int(i.split()[1])) for i in open('/proc/meminfo').readlines())
     used = meminfo['MemTotal'] - meminfo['MemFree'] - meminfo['Cached']
     percentaje_used = (used*100)/meminfo['MemTotal']
 
-    return 'Mem: %.2f GB (%d%%)' % (used/(1024*1024), math.ceil(percentaje_used))
+    return 'Mem: %.1f GB (%d%%)' % (used/(1024*1024), math.ceil(percentaje_used))
 
 def wireless():
     try:
@@ -185,24 +242,33 @@ def latency_to_gateway():
         pass
     return None
 
+# Define the path for the lock file
+try:
+    lock_file = open("/tmp/tint2_stats.lock", "w")
+    fcntl.lockf(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except IOError:
+    print("Instance already running.")
+    sys.exit(1)
 
 linux_icon = '<span foreground="#dda50a">&#xf17c;</span>'
-root = root_usage()[0]
+root = root_usage()
 root_usage_str = '<span foreground="#ffaaaa">&#xf0a0; ' + root + '</span>'
 total_cores = cores()
 cores_str = '<span foreground="#aaffaa">&#xf2db; ' + total_cores + '</span>'
 memory = memory()
 memory_usage_str = '<span foreground="#ffffaa">&#xf538; ' + memory + '</span>'
-wireless = wireless()
-if not wireless:
-    wireless_signal_str = '<span foreground="#ffffdd">&#xf796; Wired</span>'
-else:
-    wireless_signal_str = '<span foreground="#ffffdd">&#xf1eb; ' + str(wireless) + '%</span>'
 
-latency = latency_to_gateway()
-if not latency:
-    latency_to_router_str = '<span foreground="#faa">&#xf0ac; (&#xf00d;)</span> '
-else:
-    latency_to_router_str = '<span foreground="#7af">&#xf0ac; (' + latency + ' ms)</span> '
+#wireless = wireless()
+#if not wireless:
+#    wireless_signal_str = '<span foreground="#ffffdd">&#xf796; Wired</span>'
+#else:
+#    wireless_signal_str = '<span foreground="#ffffdd">&#xf1eb; ' + str(wireless) + '%</span>'
+#
+#latency = latency_to_gateway()
+#if not latency:
+#    latency_to_router_str = '<span foreground="#faa">&#xf0ac; (&#xf071;)</span> '
+#else:
+#    latency_to_router_str = '<span foreground="#7af">&#xf0ac; (' + latency + ' ms)</span> '
 
-print(root_usage_str + ' | ' + cores_str + ' | ' + memory_usage_str + ' | ' + wireless_signal_str + ' | ' + latency_to_router_str)
+#print(root_usage_str + ' | ' + cores_str + ' | ' + memory_usage_str + ' | ' + wireless_signal_str + ' | ' + latency_to_router_str)
+print(root_usage_str + ' | ' + cores_str + ' | ' + memory_usage_str) # + ' | ' + wireless_signal_str + ' | ' + latency_to_router_str)

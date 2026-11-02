@@ -25,7 +25,7 @@ panel_dock = 0
 wm_menu = 1
 panel_layer = normal
 panel_background_id = 2
-panel_items = TESBC
+panel_items = TESC
 
 # Panel Autohide
 autohide = 0
@@ -101,7 +101,7 @@ execp_font = Source Code Pro for Powerline 9
 execp_padding = 0 0
 
 # Battery
-battery = 1
+battery = 0
 battery_low_status = 10
 battery_low_cmd = notify-send "Notification: Low battery..."
 battery_full_cmd = notify-send "Notification: Full battery..."
